@@ -8,6 +8,8 @@ import { History, Calendar, TrendingUp, Eye, Trash2 } from "lucide-react"
 import { useAuth } from "@/hooks/use-auth"
 import { ProtectedRoute } from "@/components/protected-route"
 
+
+
 export default function HistoryPage() {
   const { isLoggedIn } = useAuth()
   const navigate = useNavigate()
@@ -17,17 +19,21 @@ export default function HistoryPage() {
 
   useEffect(() => {
     const fetchHistory = async () => {
+      console.log("[History] Fetching history...");
       setLoading(true)
       setError(null)
       try {
-        const response = await fetch("/api/analysis")
+        const response = await fetch(`http://localhost:3000/api/history`)
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
         const data = await response.json()
+        console.log("[History] Fetch success:", data)
         setHistoryItems(data)
       } catch (e) {
+        console.error("[History] Fetch error:", e)
         setError(e.message)
       } finally {
         setLoading(false)
+        console.log("[History] Fetch loading done.")
       }
     }
 
@@ -37,47 +43,61 @@ export default function HistoryPage() {
   }, [isLoggedIn])
 
   const handleView = (id) => {
+    console.log(`[History] View action for id: ${id}`)
     navigate(`/analysis/${id}`)
   }
 
   const handleDelete = async (id) => {
+    console.log(`[History] Delete action for id: ${id}`)
     const confirmDelete = window.confirm("Are you sure you want to delete this scan?")
-    if (!confirmDelete) return
+    if (!confirmDelete) {
+      console.log("[History] Delete cancelled by user.");
+      return
+    }
 
     try {
-      const res = await fetch(`/api/analysis/${id}`, { method: "DELETE" })
+      const res = await fetch(`/api/${id}`, { method: "DELETE" })
       if (!res.ok) throw new Error("Failed to delete")
       setHistoryItems((prev) => prev.filter((item) => item.id !== id))
+      console.log(`[History] Deleted item with id: ${id}`)
     } catch (error) {
       alert("Error deleting item")
-      console.error(error)
+      console.error("[History] Error deleting item:", error)
     }
   }
 
   const getStatusColor = (status) => {
-    switch (status) {
-      case "excellent":
-        return "bg-green-100 text-green-800"
-      case "good":
-        return "bg-yellow-100 text-yellow-800"
-      case "needs-improvement":
-        return "bg-red-100 text-red-800"
-      default:
-        return "bg-gray-100 text-gray-800"
-    }
+    const color = (() => {
+      switch (status) {
+        case "excellent":
+          return "bg-green-100 text-green-800"
+        case "good":
+          return "bg-yellow-100 text-yellow-800"
+        case "needs-improvement":
+          return "bg-red-100 text-red-800"
+        default:
+          return "bg-gray-100 text-gray-800"
+      }
+    })();
+    console.log(`[History] Status color for '${status}':`, color)
+    return color;
   }
 
   const getStatusText = (status) => {
-    switch (status) {
-      case "excellent":
-        return "Excellent"
-      case "good":
-        return "Good"
-      case "needs-improvement":
-        return "Needs Improvement"
-      default:
-        return "Unknown"
-    }
+    const text = (() => {
+      switch (status) {
+        case "excellent":
+          return "Excellent"
+        case "good":
+          return "Good"
+        case "needs-improvement":
+          return "Needs Improvement"
+        default:
+          return "Unknown"
+      }
+    })();
+    console.log(`[History] Status text for '${status}':`, text)
+    return text;
   }
 
   return (

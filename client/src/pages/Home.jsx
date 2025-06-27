@@ -281,26 +281,15 @@ export default function Home() {
       //   weaknesses: resumeAnalysis.weaknesses || [],
       // };
 // 
-      const formattedResults = {
-        score: data.results.overallScore,
-        matchedKeywords: data.results.matched,
-        missingKeywords: data.results.missing,
-        suggestions: data.results.suggestions,
-        sections: {
-          skills: { score: data.skills_score, feedback: data.skills_feedback },
-          experience: { score: data.experience_score, feedback: data.experience_feedback },
-          keywords: { score: data.keywords_score, feedback: data.keywords_feedback },
-        },
-      }
+      // Pass the entire backend response to ResultsPanel for full detail
+      setScanResults(data.results)
 
-      setScanResults(formattedResults)
-
-      alert(
-        JSON.stringify({
-          title: "Analysis Complete",
-        description: `Your resume scored ${data.results.overallScore}% match.`,
-        })
-      )
+      // alert(
+      //   JSON.stringify({
+      //     title: "Analysis Complete",
+      //   description: `Your resume scored ${data.results.overallScore}% match.`,
+      //   })
+      // )
     } catch (error) {
       console.error("Scan failed:", error)
       if (axios.isAxiosError(error)) {

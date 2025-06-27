@@ -5,7 +5,38 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { CheckCircle, XCircle, AlertCircle, TrendingUp } from "lucide-react";
 
+function mapApiResults(apiResults) {
+  if (!apiResults) return null;
+  // Helper to extract array of strings from array of objects or strings
+  function extractKeywordArray(arr) {
+    if (!Array.isArray(arr)) return [];
+    return arr.map(k => (typeof k === 'object' && k !== null && 'keyword' in k) ? k.keyword : k);
+  }
+  return {
+    score: apiResults.overallScore ?? apiResults.score,
+    matchedKeywords: extractKeywordArray(apiResults.keywordAnalysis?.matched),
+    missingKeywords: extractKeywordArray(apiResults.keywordAnalysis?.missing),
+    suggestions: (apiResults.suggestions || []).map(s =>
+      typeof s === "string" ? { suggestion: s } : { suggestion: s.text || s.suggestion || s.description || s }
+    ),
+    sections: {
+      skills: {
+        score: apiResults.sectionAnalysis?.skills?.score ?? 0,
+        feedback: apiResults.sectionAnalysis?.skills?.feedback ?? "",
+      },
+      experience: {
+        score: apiResults.sectionAnalysis?.experience?.score ?? 0,
+        feedback: apiResults.sectionAnalysis?.experience?.feedback ?? "",
+      },
+      keywords: {
+        score: apiResults.keywordAnalysis?.score ?? 0,
+      },
+    },
+  };
+}
+
 export function ResultsPanel({ results }) {
+  const mappedResults = mapApiResults(results);
   // results = {
   //   score:  number,
   //   matchedKeywords:  [string, …],
@@ -30,7 +61,7 @@ export function ResultsPanel({ results }) {
     return <XCircle className="h-5 w-5 text-red-600" />;
   };
 
-  if (!results) {
+  if (!mappedResults) {
     return null;
   }
 
@@ -46,18 +77,18 @@ export function ResultsPanel({ results }) {
         </CardHeader>
         <CardContent>
           <div className="flex items-center space-x-4">
-              <div className={`text-4xl font-bold ${getScoreColor(results?.score)}`}>
-              {results?.score}%
+              <div className={`text-4xl font-bold ${getScoreColor(mappedResults?.score)}`}>
+              {mappedResults?.score}%
             </div>
             <div className="flex-1">
-              <Progress value={results?.score} className="h-3" />
+              <Progress value={mappedResults?.score} className="h-3" />
             </div>
-            {getScoreIcon(results?.score)}
+            {getScoreIcon(mappedResults?.score)}
           </div>
           <p className="text-sm text-muted-foreground mt-2">
-            {results?.score >= 80
+            {mappedResults?.score >= 80
               ? "Excellent! Your resume is well-optimized for ATS systems."
-              : results?.score >= 60
+              : mappedResults?.score >= 60
                 ? "Good start! Some improvements needed for better ATS compatibility."
                 : "Needs improvement. Consider the suggestions below to optimize your resume."}
           </p>
@@ -66,7 +97,7 @@ export function ResultsPanel({ results }) {
 
       {/* Section Scores */}
       <div className="grid md:grid-cols-3 gap-4">
-        {Object.entries(results?.sections).map(([sectionName, data]) => (
+        {Object.entries(mappedResults?.sections).map(([sectionName, data]) => (
           <Card key={sectionName}>
             <CardHeader className="pb-3">
               <CardTitle className="text-sm capitalize">{sectionName}</CardTitle>
@@ -97,11 +128,11 @@ export function ResultsPanel({ results }) {
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-2">
-              {results?.matchedKeywords?.map((keyword, i) => (
+              {mappedResults?.matchedKeywords?.map((keyword, i) => (
                 <Badge key={i} className="bg-green-100 text-green-800">
                   {keyword}
                 </Badge>
-              ))}
+              ))} 
             </div>
           </CardContent>
         </Card>
@@ -116,7 +147,7 @@ export function ResultsPanel({ results }) {
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-2">
-              {results?.missingKeywords?.map((keyword, i) => (
+              {mappedResults?.missingKeywords?.map((keyword, i) => (
                 <Badge key={i} variant="destructive" className="bg-red-100 text-red-800">
                   {keyword}
                 </Badge>
@@ -136,7 +167,7 @@ export function ResultsPanel({ results }) {
         </CardHeader>
         <CardContent>
          <ul className="space-y-3">
-            {results?.suggestions?.map((suggestion, i) => (
+            {mappedResults?.suggestions?.map((suggestion, i) => (
               <li key={i} className="flex items-start space-x-2">
                 <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
                 <span className="text-sm">{suggestion.suggestion}</span>
