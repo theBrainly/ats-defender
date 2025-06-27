@@ -54,12 +54,12 @@ await analysis.save();
       // Extract job requirements using AI
       console.log("Extracting job keywords...");
       const jobKeywords = await aiAnalyzer.extractJobKeywords(jobDescription);
-      console.log(jobKeywords)
+      console.log("jobKeywords:", jobKeywords);
 
       // Analyze resume content using AI
       console.log("Analyzing resume content...");
       const resumeAnalysis = await aiAnalyzer.analyzeResumeContent(resumeText);
-
+      console.log("resumeAnalysis:", resumeAnalysis);
 
       // Calculate keyword matching
       console.log("Calculating keyword matches...");
@@ -67,6 +67,7 @@ await analysis.save();
         resumeAnalysis.skills,
         jobKeywords
       );
+      console.log("keywordMatch:", keywordMatch);
 
       // Calculate section scores
       console.log("Calculating section scores...");
@@ -74,6 +75,7 @@ await analysis.save();
         resumeAnalysis,
         jobKeywords
       );
+      console.log("sectionScores:", sectionScores);
 
       // Calculate overall score (weighted average)
       const overallScore = Math.round(
@@ -83,6 +85,7 @@ await analysis.save();
           sectionScores.education.score * 0.1 +
           sectionScores.formatting.score * 0.05
       );
+      console.log("overallScore:", overallScore);
 
       // Generate AI-powered suggestions
       console.log("Generating suggestions...");
@@ -91,6 +94,7 @@ await analysis.save();
         jobKeywords,
         overallScore
       );
+      console.log("suggestions:", suggestions);
 
       const processingTime = Date.now() - startTime;
 
@@ -98,16 +102,8 @@ await analysis.save();
       analysis.analysis = {
         overallScore,
         keywordAnalysis: {
-          matched: keywordMatch.matched.map(keyword => ({
-            keyword,
-            frequency: 1,
-            importance: 1
-          })),
-          missing: keywordMatch.missing.map(keyword => ({
-            keyword,
-            importance: 1,
-            category: 'skill'
-          })),
+          matched: keywordMatch.matched, // array of strings
+          missing: keywordMatch.missing, // array of strings
           score: keywordMatch.score,
         },
         sectionAnalysis: sectionScores,
@@ -129,6 +125,8 @@ await analysis.save();
 
       analysis.status = "completed";
       await analysis.save();
+
+      console.log("API FINAL RESPONSE:", analysis.analysis);
 
       // Increment user's scan count if authenticated
       if (userId) {
@@ -230,6 +228,7 @@ await analysis.save();
 // GET /api/analysis/history - Get user's analysis history
 router.get("/history", async (req, res) => {
   try {
+    console.log("[History] Fetching history...");
     const userId = req.user?.id;
     const page = Number.parseInt(req.query.page) || 1;
     const limit = Number.parseInt(req.query.limit) || 10;

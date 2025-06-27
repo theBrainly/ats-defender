@@ -1,20 +1,8 @@
 import mongoose from "mongoose"
 
 const keywordAnalysisSchema = new mongoose.Schema({
-  matched: [
-    {
-      keyword: String,
-      frequency: Number,
-      importance: Number,
-    },
-  ],
-  missing: [
-    {
-      keyword: String,
-      importance: Number,
-      category: String,
-    },
-  ],
+  matched: [String],
+  missing: [String],
   score: {
     type: Number,
     min: 0,

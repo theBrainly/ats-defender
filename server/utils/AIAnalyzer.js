@@ -177,7 +177,10 @@ IMPORTANT:
           
           // Try to parse the JSON
           try {
+            console.log("============================")
+            console.log(content)
             return JSON.parse(content);
+
           } catch (parseError) {
             // If parsing fails, try to clean up common JSON formatting issues
             content = content
