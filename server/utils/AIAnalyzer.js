@@ -9,7 +9,7 @@ export class AIAnalyzer {
     this.fallbackModel = 'moonshotai/kimi-dev-72b:free';
   }
 
-  // Extract keywords from job description using OpenRouter
+  // Extract keywords from job description using yesOpenRouter
   async extractJobKeywords(jobDescription) {
     try {
       const response = await this._sendOpenRouterRequest(

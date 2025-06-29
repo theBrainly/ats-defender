@@ -1,39 +1,39 @@
-import express from "express";
-import mongoose from "mongoose"; // Import mongoose to use ObjectId
-import Analysis from "../models/Analysis.js";
-import User from "../models/User.js";
-import { AIAnalyzer } from "../utils/AIAnalyzer.js";
+import express from "express"
+import mongoose from "mongoose" // Import mongoose to use ObjectId
+import Analysis from "../models/Analysis.js"
+import User from "../models/User.js"
+import { AIAnalyzer } from "../utils/AIAnalyzer.js"
 
-const router = express.Router();
-const aiAnalyzer = new AIAnalyzer();
+const router = express.Router()
+const aiAnalyzer = new AIAnalyzer()
 
 // Helper function to determine score status
 function getScoreStatus(score) {
-  if (score >= 80) return "excellent";
-  if (score >= 60) return "good";
-  return "needs-improvement";
+  if (score >= 80) return "excellent"
+  if (score >= 60) return "good"
+  return "needs-improvement"
 }
 
 // POST /api/analysis/scan - Analyze resume against job description
 router.post("/scan", async (req, res) => {
   try {
-    const { resumeText, jobDescription, jobTitle, company, location } = req.body;
+    const { resumeText, jobDescription, jobTitle, company, location } = req.body
     // console.log(jobDescription)
-    const userId = req.user?.id;
-     console.log(resumeText)
+    const userId = req.user?.id
+    console.log(resumeText)
     // Validate input
-    if (!resumeText || !jobDescription ) {
+    if (!resumeText || !jobDescription) {
       return res.status(400).json({
         error: "Missing required fields",
         message: "Resume text, job description, and job title are required",
-      });
+      })
     }
 
     // Create analysis record
     const analysis = new Analysis({
       userId,
       jobDetails: {
-        title: jobTitle||"",
+        title: jobTitle || "",
         company: company || "",
         description: jobDescription,
         location: location || "",
@@ -43,39 +43,33 @@ router.post("/scan", async (req, res) => {
         wordCount: resumeText.split(" ").length,
       },
       status: "processing",
-    });
-  //  console.log(analysis)
-await analysis.save();
+    })
+    //  console.log(analysis)
+    await analysis.save()
     //  console.log("anssssssssssss      "+ans)
     // Perform AI analysis
-    const startTime = Date.now();
+    const startTime = Date.now()
 
     try {
       // Extract job requirements using AI
-      console.log("Extracting job keywords...");
-      const jobKeywords = await aiAnalyzer.extractJobKeywords(jobDescription);
-      console.log("jobKeywords:", jobKeywords);
+      console.log("Extracting job keywords...")
+      const jobKeywords = await aiAnalyzer.extractJobKeywords(jobDescription)
+      console.log("jobKeywords:", jobKeywords)
 
       // Analyze resume content using AI
-      console.log("Analyzing resume content...");
-      const resumeAnalysis = await aiAnalyzer.analyzeResumeContent(resumeText);
-      console.log("resumeAnalysis:", resumeAnalysis);
+      console.log("Analyzing resume content...")
+      const resumeAnalysis = await aiAnalyzer.analyzeResumeContent(resumeText)
+      console.log("resumeAnalysis:", resumeAnalysis)
 
       // Calculate keyword matching
-      console.log("Calculating keyword matches...");
-      const keywordMatch = aiAnalyzer.calculateKeywordMatch(
-        resumeAnalysis.skills,
-        jobKeywords
-      );
-      console.log("keywordMatch:", keywordMatch);
+      console.log("Calculating keyword matches...")
+      const keywordMatch = aiAnalyzer.calculateKeywordMatch(resumeAnalysis.skills, jobKeywords)
+      console.log("keywordMatch:", keywordMatch)
 
       // Calculate section scores
-      console.log("Calculating section scores...");
-      const sectionScores = aiAnalyzer.calculateSectionScores(
-        resumeAnalysis,
-        jobKeywords
-      );
-      console.log("sectionScores:", sectionScores);
+      console.log("Calculating section scores...")
+      const sectionScores = aiAnalyzer.calculateSectionScores(resumeAnalysis, jobKeywords)
+      console.log("sectionScores:", sectionScores)
 
       // Calculate overall score (weighted average)
       const overallScore = Math.round(
@@ -83,20 +77,16 @@ await analysis.save();
           sectionScores.skills.score * 0.25 +
           sectionScores.experience.score * 0.2 +
           sectionScores.education.score * 0.1 +
-          sectionScores.formatting.score * 0.05
-      );
-      console.log("overallScore:", overallScore);
+          sectionScores.formatting.score * 0.05,
+      )
+      console.log("overallScore:", overallScore)
 
       // Generate AI-powered suggestions
-      console.log("Generating suggestions...");
-      const suggestions = await aiAnalyzer.generateSuggestions(
-        resumeAnalysis,
-        jobKeywords,
-        overallScore
-      );
-      console.log("suggestions:", suggestions);
+      console.log("Generating suggestions...")
+      const suggestions = await aiAnalyzer.generateSuggestions(resumeAnalysis, jobKeywords, overallScore)
+      console.log("suggestions:", suggestions)
 
-      const processingTime = Date.now() - startTime;
+      const processingTime = Date.now() - startTime
 
       // Update analysis with results
       analysis.analysis = {
@@ -107,36 +97,36 @@ await analysis.save();
           score: keywordMatch.score,
         },
         sectionAnalysis: sectionScores,
-        suggestions: suggestions.map(suggestion => suggestion.description || suggestion),
+        suggestions: suggestions.map((suggestion) => suggestion.description || suggestion),
         strengths: resumeAnalysis.strengths || [],
         weaknesses: resumeAnalysis.weaknesses || [],
-      };
+      }
 
-      analysis.resumeData.processedText = resumeText;
-      analysis.jobDetails.requirements = jobKeywords.requiredSkills || [];
-      analysis.jobDetails.preferredSkills = jobKeywords.preferredSkills || [];
-      analysis.jobDetails.experienceLevel = jobKeywords.experienceLevel || "";
+      analysis.resumeData.processedText = resumeText
+      analysis.jobDetails.requirements = jobKeywords.requiredSkills || []
+      analysis.jobDetails.preferredSkills = jobKeywords.preferredSkills || []
+      analysis.jobDetails.experienceLevel = jobKeywords.experienceLevel || ""
 
       analysis.metadata = {
         processingTime,
         aiModel: aiAnalyzer.model,
         version: "2.0",
-      };
+      }
 
-      analysis.status = "completed";
-      await analysis.save();
+      analysis.status = "completed"
+      await analysis.save()
 
-      console.log("API FINAL RESPONSE:", analysis.analysis);
+      console.log("API FINAL RESPONSE:", analysis.analysis)
 
       // Increment user's scan count if authenticated
       if (userId) {
-        const user = await User.findById(userId);
+        const user = await User.findById(userId)
         if (user) {
-          await user.incrementScanCount();
+          await user.incrementScanCount()
         }
       }
 
-      console.log(`Analysis completed in ${processingTime}ms with score: ${overallScore}`);
+      console.log(`Analysis completed in ${processingTime}ms with score: ${overallScore}`)
 
       // Format response to match client expectations
       const formattedResponse = {
@@ -148,7 +138,7 @@ await analysis.save();
           keywordAnalysis: {
             matched: keywordMatch.matched,
             missing: keywordMatch.missing,
-            score: keywordMatch.score
+            score: keywordMatch.score,
           },
           // Format section analysis
           sectionAnalysis: {
@@ -157,34 +147,34 @@ await analysis.save();
               feedback: sectionScores.skills.feedback,
               suggestions: sectionScores.skills.suggestions,
               detectedSkills: sectionScores.skills.detectedSkills,
-              missingSkills: sectionScores.skills.missingSkills
+              missingSkills: sectionScores.skills.missingSkills,
             },
             experience: {
               score: sectionScores.experience.score,
               feedback: sectionScores.experience.feedback,
               suggestions: sectionScores.experience.suggestions,
               yearsDetected: sectionScores.experience.yearsDetected,
-              relevantExperience: sectionScores.experience.relevantExperience
+              relevantExperience: sectionScores.experience.relevantExperience,
             },
             education: {
               score: sectionScores.education.score,
               feedback: sectionScores.education.feedback,
               suggestions: sectionScores.education.suggestions,
               detectedDegrees: sectionScores.education.detectedDegrees,
-              relevantEducation: sectionScores.education.relevantEducation
+              relevantEducation: sectionScores.education.relevantEducation,
             },
             formatting: {
               score: sectionScores.formatting.score,
               feedback: sectionScores.formatting.feedback,
               suggestions: sectionScores.formatting.suggestions,
-              issues: sectionScores.formatting.issues
-            }
+              issues: sectionScores.formatting.issues,
+            },
           },
           // Format suggestions
-          suggestions: suggestions.map(suggestion => ({
+          suggestions: suggestions.map((suggestion) => ({
             text: suggestion.description || suggestion,
-            priority: suggestion.priority || 'medium',
-            category: suggestion.category || 'general'
+            priority: suggestion.priority || "medium",
+            category: suggestion.category || "general",
           })),
           // Include strengths and weaknesses
           strengths: resumeAnalysis.strengths || [],
@@ -197,42 +187,42 @@ await analysis.save();
           experience_score: sectionScores.experience.score,
           experience_feedback: sectionScores.experience.feedback,
           keywords_score: keywordMatch.score,
-          keywords_feedback: `Matched ${keywordMatch.matched.length} out of ${keywordMatch.matched.length + keywordMatch.missing.length} keywords`
-        }
-      };
+          keywords_feedback: `Matched ${keywordMatch.matched.length} out of ${keywordMatch.matched.length + keywordMatch.missing.length} keywords`,
+        },
+      }
 
-      res.json(formattedResponse);
+      res.json(formattedResponse)
     } catch (analysisError) {
-      console.error("Analysis failed:", analysisError);
-      analysis.status = "failed";
+      console.error("Analysis failed:", analysisError)
+      analysis.status = "failed"
       analysis.error = {
         message: analysisError.message,
         stack: process.env.NODE_ENV === "development" ? analysisError.stack : undefined,
-      };
-      await analysis.save();
+      }
+      await analysis.save()
 
       res.status(500).json({
         error: "Analysis failed",
         message: "Unable to complete resume analysis. Please try again.",
-      });
+      })
     }
   } catch (error) {
-    console.error("Scan endpoint error:", error);
+    console.error("Scan endpoint error:", error)
     res.status(500).json({
       error: "Internal server error",
       message: "Unable to process scan request",
-    });
+    })
   }
-});
+})
 
 // GET /api/analysis/history - Get user's analysis history
 router.get("/history", async (req, res) => {
   try {
-    console.log("[History] Fetching history...");
-    const userId = req.user?.id;
-    const page = Number.parseInt(req.query.page) || 1;
-    const limit = Number.parseInt(req.query.limit) || 10;
-    const skip = (page - 1) * limit;
+    console.log("[History] Fetching history...")
+    const userId = req.user?.id
+    const page = Number.parseInt(req.query.page) || 1
+    const limit = Number.parseInt(req.query.limit) || 10
+    const skip = (page - 1) * limit
 
     // If no user, return empty history
     if (!userId) {
@@ -245,22 +235,25 @@ router.get("/history", async (req, res) => {
           total: 0,
           pages: 0,
         },
-      });
+      })
     }
 
+    // Convert userId to ObjectId for MongoDB query
+    const userObjectId = new mongoose.Types.ObjectId(userId)
+
     const analyses = await Analysis.find({
-      userId,
+      userId: userObjectId,
       status: "completed",
     })
       .select("jobDetails analysis.overallScore createdAt metadata")
       .sort({ createdAt: -1 })
       .skip(skip)
-      .limit(limit);
+      .limit(limit)
 
     const total = await Analysis.countDocuments({
-      userId,
+      userId: userObjectId,
       status: "completed",
-    });
+    })
 
     const formattedHistory = analyses.map((analysis) => ({
       id: analysis._id,
@@ -270,7 +263,7 @@ router.get("/history", async (req, res) => {
       date: analysis.createdAt,
       processingTime: analysis.metadata?.processingTime,
       status: getScoreStatus(analysis.analysis.overallScore),
-    }));
+    }))
 
     res.json({
       success: true,
@@ -281,37 +274,39 @@ router.get("/history", async (req, res) => {
         total,
         pages: Math.ceil(total / limit),
       },
-    });
+    })
   } catch (error) {
-    console.error("History endpoint error:", error);
+    console.error("History endpoint error:", error)
     res.status(500).json({
+      success: false,
       error: "Internal server error",
       message: "Unable to fetch analysis history",
-    });
+    })
   }
-});
+})
 
 // GET /api/analysis/:id - Get specific analysis details
 router.get("/:id", async (req, res) => {
   try {
-    const { id } = req.params;
-    const userId = req.user?.id;
+    const { id } = req.params
+    const userId = req.user?.id
+    console.log("User ID:", userId)
 
     // Validate ID format
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
         error: "Invalid ID format",
         message: "The provided analysis ID is not valid",
-      });
+      })
     }
 
-    const analysis = await Analysis.findById(id);
+    const analysis = await Analysis.findById(id)
 
     if (!analysis) {
       return res.status(404).json({
         error: "Analysis not found",
         message: "The requested analysis does not exist",
-      });
+      })
     }
 
     // Check ownership if user is authenticated
@@ -319,7 +314,7 @@ router.get("/:id", async (req, res) => {
       return res.status(403).json({
         error: "Access denied",
         message: "You do not have permission to access this analysis",
-      });
+      })
     }
 
     res.json({
@@ -332,37 +327,37 @@ router.get("/:id", async (req, res) => {
         createdAt: analysis.createdAt,
         status: analysis.status,
       },
-    });
+    })
   } catch (error) {
-    console.error("Get analysis error:", error);
+    console.error("Get analysis error:", error)
     res.status(500).json({
       error: "Internal server error",
       message: "Unable to fetch analysis details",
-    });
+    })
   }
-});
+})
 
 // DELETE /api/analysis/:id - Delete specific analysis
 router.delete("/:id", async (req, res) => {
   try {
-    const { id } = req.params;
-    const userId = req.user?.id;
+    const { id } = req.params
+    const userId = req.user?.id
 
     // Validate ID format
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
         error: "Invalid ID format",
         message: "The provided analysis ID is not valid",
-      });
+      })
     }
 
-    const analysis = await Analysis.findById(id);
+    const analysis = await Analysis.findById(id)
 
     if (!analysis) {
       return res.status(404).json({
         error: "Analysis not found",
         message: "The requested analysis does not exist",
-      });
+      })
     }
 
     // Check ownership
@@ -370,28 +365,28 @@ router.delete("/:id", async (req, res) => {
       return res.status(403).json({
         error: "Access denied",
         message: "You do not have permission to delete this analysis",
-      });
+      })
     }
 
-    await Analysis.deleteOne({ _id: id });
+    await Analysis.deleteOne({ _id: id })
 
     res.json({
       success: true,
       message: "Analysis deleted successfully",
-    });
+    })
   } catch (error) {
-    console.error("Delete analysis error:", error);
+    console.error("Delete analysis error:", error)
     res.status(500).json({
       error: "Internal server error",
       message: "Unable to delete analysis",
-    });
+    })
   }
-});
+})
 
 // GET /api/analysis/stats/overview - Get user's analysis statistics
 router.get("/stats/overview", async (req, res) => {
   try {
-    const userId = req.user?.id;
+    const userId = req.user?.id
 
     // Return empty stats if no user
     if (!userId) {
@@ -406,15 +401,15 @@ router.get("/stats/overview", async (req, res) => {
           recentScansCount: 0,
           improvement: 0,
         },
-      });
+      })
     }
 
     const stats = await Analysis.aggregate([
-      { 
-        $match: { 
-          userId: new mongoose.Types.ObjectId(userId), 
-          status: "completed" 
-        } 
+      {
+        $match: {
+          userId: new mongoose.Types.ObjectId(userId),
+          status: "completed",
+        },
       },
       {
         $group: {
@@ -426,12 +421,12 @@ router.get("/stats/overview", async (req, res) => {
           recentScans: {
             $push: {
               score: "$analysis.overallScore",
-              date: "$createdAt"
-            }
+              date: "$createdAt",
+            },
           },
         },
       },
-    ]);
+    ])
 
     const userStats = stats[0] || {
       totalScans: 0,
@@ -439,17 +434,17 @@ router.get("/stats/overview", async (req, res) => {
       highestScore: 0,
       lowestScore: 0,
       recentScans: [],
-    };
+    }
 
     // Calculate improvement based on last 5 scans
-    let improvement = 0;
+    let improvement = 0
     const recentScores = userStats.recentScans
       .sort((a, b) => b.date - a.date)
       .slice(0, 5)
-      .map(item => item.score);
-    
+      .map((item) => item.score)
+
     if (recentScores.length > 1) {
-      improvement = recentScores[0] - recentScores[recentScores.length - 1];
+      improvement = recentScores[0] - recentScores[recentScores.length - 1]
     }
 
     res.json({
@@ -463,14 +458,14 @@ router.get("/stats/overview", async (req, res) => {
         recentScansCount: userStats.recentScans.length,
         improvement,
       },
-    });
+    })
   } catch (error) {
-    console.error("Stats endpoint error:", error);
+    console.error("Stats endpoint error:", error)
     res.status(500).json({
       error: "Internal server error",
       message: "Unable to fetch statistics",
-    });
+    })
   }
-});
+})
 
-export default router;
+export default router

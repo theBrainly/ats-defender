@@ -8,13 +8,25 @@ import authRoutes from "./routes/authRoutes.js"
 import analysisRoutes from "./routes/analysisRoutes.js"
 import  authMiddleware from "./middleware/auth.js"
 import connectDB from "./config/db.js";
+import path from "path";
 
-dotenv.config()
+const app = express()
+
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
-const app = express()
+// // Serve static frontend
+// const frontendPath = path.join(__dirname, 'dist'); // or 'out' for Next.js
+// app.use(express.static(frontendPath));
+
+// // Serve index.html for all frontend routes
+// app.get('*', (_, res) => {
+//   res.sendFile(path.join(frontendPath, 'index.html'));
+// });
+
+dotenv.config()
+
 const PORT = process.env.PORT || 5000
 
 // Middleware
@@ -26,7 +38,7 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }))
 
 // Routes
 app.use("/api/auth", authRoutes)
-app.use("/api/", authMiddleware, analysisRoutes)
+app.use("/api/analysis", authMiddleware, analysisRoutes)
 
 // Health check endpoint
 app.get("/api/health", (req, res) => {
