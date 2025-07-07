@@ -1,0 +1,21 @@
+This is a test resume document.
+
+Name: John Doe
+Email: john.doe@email.com
+Phone: (555) 123-4567
+
+EXPERIENCE:
+- Software Engineer at ABC Company (2020-2023)
+- Junior Developer at XYZ Corp (2018-2020)
+
+SKILLS:
+- JavaScript, React, Node.js
+- Python, Django
+- Database Management
+- Version Control (Git)
+
+EDUCATION:
+- Bachelor of Science in Computer Science
+- University of Technology (2014-2018)
+
+This is a sample resume for testing file extraction functionality.

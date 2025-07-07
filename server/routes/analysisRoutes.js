@@ -18,15 +18,29 @@ function getScoreStatus(score) {
 router.post("/scan", async (req, res) => {
   try {
     const { resumeText, jobDescription, jobTitle, company, location } = req.body
-    // console.log(jobDescription)
     const userId = req.user?.id
     console.log(resumeText)
+    
     // Validate input
     if (!resumeText || !jobDescription) {
       return res.status(400).json({
         error: "Missing required fields",
         message: "Resume text, job description, and job title are required",
       })
+    }
+    
+    // Check if user is logged in
+    if (userId) {
+      // Check scan limits for logged-in users
+      const user = await User.findById(userId);
+      if (user.scanCount >= user.scanLimit) {
+        return res.status(403).json({
+          error: "Scan limit reached",
+          message: "You have reached your maximum scan limit of " + user.scanLimit + " scans.",
+          scanCount: user.scanCount,
+          scanLimit: user.scanLimit
+        });
+      }
     }
 
     // Create analysis record
@@ -464,6 +478,46 @@ router.get("/stats/overview", async (req, res) => {
     res.status(500).json({
       error: "Internal server error",
       message: "Unable to fetch statistics",
+    })
+  }
+})
+
+// GET /api/analysis/scan-stats - Get user scan count and limit
+router.get("/scan-stats", async (req, res) => {
+  try {
+    const userId = req.user?.id
+    
+    // If no user is logged in, return default values
+    if (!userId) {
+      return res.json({
+        success: true,
+        scanCount: 0,
+        scanLimit: 25,
+        canScan: true
+      })
+    }
+    
+    // Get user scan count and limit
+    const user = await User.findById(userId).select('scanCount scanLimit')
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        error: "User not found"
+      })
+    }
+    
+    res.json({
+      success: true,
+      scanCount: user.scanCount,
+      scanLimit: user.scanLimit,
+      canScan: user.scanCount < user.scanLimit,
+      remaining: user.scanLimit - user.scanCount
+    })
+  } catch (error) {
+    console.error("Error getting scan stats:", error)
+    res.status(500).json({
+      success: false,
+      error: "Failed to get scan statistics"
     })
   }
 })

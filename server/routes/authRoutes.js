@@ -1,7 +1,9 @@
 import express from "express"
 import jwt from "jsonwebtoken"
 import User from "../models/User.js"
+import Analysis from "../models/Analysis.js"
 import  authMiddleware  from "../middleware/auth.js"
+import { uploadAvatar } from "../middleware/upload.js"
 
 const router = express.Router()
 
@@ -202,5 +204,188 @@ router.put("/profile", authMiddleware, async (req, res) => {
     })
   }
 })
+
+// POST /api/auth/upload-avatar - Upload user avatar
+router.post("/upload-avatar", authMiddleware, uploadAvatar.single('avatar'), async (req, res) => {
+  try {
+    console.log("Avatar upload request received");
+    console.log("File:", req.file);
+    
+    if (!req.file) {
+      console.log("No file in request");
+      return res.status(400).json({
+        error: "No file uploaded",
+        message: "Please select an image file",
+      });
+    }
+
+    const userId = req.user.id;
+    const avatarUrl = req.file.path; // Cloudinary URL
+    console.log("Avatar URL:", avatarUrl);
+
+    // Update user's avatar in database
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { 'profile.avatar': avatarUrl },
+      { new: true, runValidators: true }
+    ).select("-password");
+
+    if (!user) {
+      return res.status(404).json({
+        error: "User not found",
+        message: "User account does not exist",
+      });
+    }
+
+    console.log("Avatar upload successful");
+    res.json({
+      success: true,
+      message: "Avatar uploaded successfully",
+      avatarUrl: avatarUrl,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        subscription: user.subscription,
+        profile: user.profile,
+      },
+    });
+  } catch (error) {
+    console.error("Avatar upload error:", error);
+    res.status(500).json({
+      error: "Internal server error",
+      message: "Unable to upload avatar",
+    });
+  }
+});
+
+// PUT /api/auth/change-password - Change user password
+router.put("/change-password", authMiddleware, async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const user = req.user;
+
+    // Validate current password
+    const isCurrentPasswordValid = await user.comparePassword(currentPassword);
+    if (!isCurrentPasswordValid) {
+      return res.status(400).json({
+        error: "Invalid password",
+        message: "Current password is incorrect",
+      });
+    }
+
+    // Update password
+    user.password = newPassword;
+    await user.save();
+
+    res.json({
+      success: true,
+      message: "Password updated successfully",
+    });
+  } catch (error) {
+    console.error("Password change error:", error);
+    res.status(500).json({
+      error: "Internal server error",
+      message: "Unable to change password",
+    });
+  }
+});
+
+// GET /api/auth/export-data - Export user data
+router.get("/export-data", authMiddleware, async (req, res) => {
+  try {
+    console.log("Export data request received for user:", req.user.email);
+    const user = req.user;
+    
+    // Get user's analysis data
+    const analyses = await Analysis.find({ userId: user._id });
+    console.log("Found analyses:", analyses.length);
+
+    const exportData = {
+      user: {
+        name: user.name,
+        email: user.email,
+        profile: user.profile,
+        subscription: user.subscription,
+        createdAt: user.createdAt,
+      },
+      analyses: analyses.map(analysis => ({
+        id: analysis._id,
+        resumeText: analysis.resumeText,
+        jobDescription: analysis.jobDescription,
+        score: analysis.score,
+        feedback: analysis.feedback,
+        createdAt: analysis.createdAt,
+      })),
+      exportDate: new Date().toISOString(),
+    };
+
+    console.log("Sending export data response");
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Content-Disposition', 'attachment; filename="ats-defender-data.json"');
+    res.json(exportData);
+  } catch (error) {
+    console.error("Data export error:", error);
+    res.status(500).json({
+      error: "Internal server error",
+      message: "Unable to export data",
+    });
+  }
+});
+
+// DELETE /api/auth/delete-account - Delete user account
+router.delete("/delete-account", authMiddleware, async (req, res) => {
+  try {
+    const user = req.user;
+    
+    // Delete user's analysis data
+    await Analysis.deleteMany({ userId: user._id });
+
+    // Delete user account
+    await User.findByIdAndDelete(user._id);
+
+    res.json({
+      success: true,
+      message: "Account deleted successfully",
+    });
+  } catch (error) {
+    console.error("Account deletion error:", error);
+    res.status(500).json({
+      error: "Internal server error",
+      message: "Unable to delete account",
+    });
+  }
+});
+
+// PUT /api/auth/settings - Save user settings
+router.put("/settings", authMiddleware, async (req, res) => {
+  try {
+    const { notifications, privacy, preferences } = req.body;
+    const user = req.user;
+
+    // Update user settings
+    if (!user.settings) {
+      user.settings = {};
+    }
+    
+    if (notifications) user.settings.notifications = notifications;
+    if (privacy) user.settings.privacy = privacy;
+    if (preferences) user.settings.preferences = preferences;
+
+    await user.save();
+
+    res.json({
+      success: true,
+      message: "Settings saved successfully",
+      settings: user.settings,
+    });
+  } catch (error) {
+    console.error("Settings save error:", error);
+    res.status(500).json({
+      error: "Internal server error",
+      message: "Unable to save settings",
+    });
+  }
+});
 
 export default router

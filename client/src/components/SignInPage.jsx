@@ -1,6 +1,5 @@
 import React, { useState } from "react"
 import { useNavigate, Link } from "react-router-dom"
-import axios from "axios"
 import { Shield, Loader2, Eye, EyeOff } from "lucide-react"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -8,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { useAuth } from "@/hooks/use-auth"
 
 export default function SignInPage() {
   const [formData, setFormData] = useState({ email: "", password: "" })
@@ -16,6 +16,7 @@ export default function SignInPage() {
   const [error, setError] = useState("")
 
   const navigate = useNavigate()
+  const { signIn } = useAuth()
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -37,23 +38,12 @@ export default function SignInPage() {
     setError("")
 
     try {
-        console.log(formData)
-      const response = await axios.post("http://localhost:3000/api/auth/login", {
-        email: formData.email,
-        password: formData.password,
-      })
-      console.log(response.status)
-
-      if (response.status === 200 || response.data.success) {
-        // Store token if needed
-        localStorage.setItem("token", response.data.token)
-        navigate("/")
-      } else {
-        setError(response.data.message || "Login failed")
-      }
+      console.log(formData)
+      await signIn(formData.email, formData.password)
+      navigate("/")
     } catch (err) {
       console.error(err)
-      setError(err.response?.data?.message || "An error occurred during sign in")
+      setError(err.message || "An error occurred during sign in")
     } finally {
       setIsLoading(false)
     }

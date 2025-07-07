@@ -52,7 +52,7 @@ export default function AnalysisDetailPage() {
 
     try {
       const token = localStorage.getItem("token")
-      const response = await fetch(`http://localhost:3000/api/analysis/${id}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api"}/analysis/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",

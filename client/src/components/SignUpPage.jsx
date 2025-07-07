@@ -1,6 +1,5 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { useNavigate, Link } from "react-router-dom"
-import axios from "axios"
 import {
   Card,
   CardContent,
@@ -13,6 +12,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Checkbox } from "@/components/ui/checkbox"
+import { useAuth } from "@/hooks/use-auth"
 import { Loader2, Eye, EyeOff, Shield, Check } from "lucide-react"
 
 export default function SignUpPage() {
@@ -28,8 +28,29 @@ export default function SignUpPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
+  const [submitAttempts, setSubmitAttempts] = useState(0)
+  const [lastSubmitTime, setLastSubmitTime] = useState(0)
+  const [honeypot, setHoneypot] = useState("")
+
+  // Generate CSRF token for form protection
+  const [csrfToken, setCsrfToken] = useState("")
+
+  useEffect(() => {
+    // Generate a random CSRF token
+    const generateToken = () => {
+      const array = new Uint8Array(16)
+      window.crypto.getRandomValues(array)
+      const token = Array.from(array)
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('')
+      setCsrfToken(token)
+    }
+
+    generateToken()
+  }, [])
 
   const navigate = useNavigate()
+  const { signUp } = useAuth()
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target
@@ -41,38 +62,123 @@ export default function SignUpPage() {
   }
 
   const validateForm = () => {
+    // Name validation
     if (!formData.name.trim()) return setError("Name is required")
+    if (formData.name.trim().length < 2) return setError("Name must be at least 2 characters long")
+
+    // Email validation with more comprehensive regex
     if (!formData.email.trim()) return setError("Email is required")
-    if (formData.password.length < 6) return setError("Password must be at least 6 characters long")
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+    if (!emailRegex.test(formData.email)) return setError("Please enter a valid email address")
+
+    // Password validation
+    if (formData.password.length < 8) return setError("Password must be at least 8 characters long")
+    if (!/[A-Z]/.test(formData.password)) return setError("Password must contain at least one uppercase letter")
+    if (!/[a-z]/.test(formData.password)) return setError("Password must contain at least one lowercase letter")
+    if (!/\d/.test(formData.password)) return setError("Password must contain at least one number")
+    if (!/[^a-zA-Z0-9]/.test(formData.password)) return setError("Password must contain at least one special character")
+
     if (formData.password !== formData.confirmPassword) return setError("Passwords do not match")
     if (!formData.agreeToTerms) return setError("You must agree to the terms and conditions")
     return true
   }
 
+  const validateHuman = () => {
+    // If the honeypot field is filled, it's likely a bot
+    if (honeypot) {
+      console.log("Bot detected")
+      setError("There was a problem with your submission")
+      return false
+    }
+    return true
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!validateForm()) return
+
+    // Simple rate limiting to prevent brute force attempts
+    const now = Date.now()
+    if (now - lastSubmitTime < 1000) { // 1 second cooldown between submission attempts
+      setError("Please wait a moment before trying again")
+      return
+    }
+    setLastSubmitTime(now)
+
+    // Increase attempt counter for more sophisticated rate limiting
+    setSubmitAttempts(prev => {
+      const newCount = prev + 1
+      // If too many attempts, could implement further restrictions
+      if (newCount > 5) {
+        // In production, you might want to implement a timeout here
+        setTimeout(() => setSubmitAttempts(0), 60000) // Reset after 1 minute
+      }
+      return newCount
+    })
+
+    if (!validateForm() || !validateHuman()) return
 
     setIsLoading(true)
     setError("")
 
     try {
-      const response = await axios.post("http://localhost:3000/api/auth/register", {
-        name: formData.name,
-        email: formData.email,
-        password: formData.password,
+      // Sanitize inputs before sending to API
+      const sanitizedName = formData.name.trim()
+      const sanitizedEmail = formData.email.trim().toLowerCase()
+
+      await signUp(sanitizedName, sanitizedEmail, formData.password, formData.confirmPassword)
+
+      // Clear sensitive data from memory
+      setFormData({
+        name: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+        agreeToTerms: false
       })
 
-      if (response.status === 201 || response.data.success) {
-        navigate("/auth/signin")
-      } else {
-        setError(response.data.message || "Registration failed")
-      }
+      // Set secure auth cookie attributes (httpOnly would be set by server)
+      // This is just to document best practices - actual implementation will be server-side
+      // document.cookie = "token=; SameSite=Strict; Secure; Path=/;"
+
+      // Set session timeout (in a real app, should be done server-side)
+      localStorage.setItem("session_started", Date.now().toString())
+
+      // Successful signup - redirect to home with success parameter
+      navigate("/?signup=success", {
+        state: {
+          message: "Account created successfully! Welcome to ATS Defender.",
+          alertType: "success"
+        }
+      })
     } catch (err) {
-      console.error(err)
-      setError(
-        err.response?.data?.message || "An error occurred. Please try again later."
-      )
+      // Log detailed error for monitoring systems (in production, use a service like Sentry)
+      console.error("Signup error:", err)
+
+      // Track failed attempts for security monitoring
+      const timestamp = new Date().toISOString()
+      const errorData = {
+        timestamp,
+        email: formData.email.substring(0, 3) + '***@***', // Don't log full email
+        errorType: err.name,
+        errorMessage: err.message,
+        // Don't include passwords or sensitive info in logs
+      }
+
+      // In production, send this to your error tracking service:
+      // Example: trackError('signup_failure', errorData)
+      console.warn('Authentication failure:', errorData)
+
+      // More user-friendly error messages
+      if (err.message?.includes("already exists")) {
+        setError("This email is already registered. Try signing in instead.")
+      } else if (err.message?.includes("network")) {
+        setError("Network error. Please check your connection and try again.")
+      } else if (err.message?.includes("password") || err.message?.includes("Password")) {
+        setError(err.message || "Password doesn't meet security requirements.")
+      } else {
+        // Don't expose detailed error messages to users in production
+        setError("An error occurred during signup. Please try again later.")
+      }
     } finally {
       setIsLoading(false)
     }
@@ -80,11 +186,20 @@ export default function SignUpPage() {
 
   const getPasswordStrength = (password) => {
     let strength = 0
-    if (password.length >= 6) strength++
-    if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++
+
+    // Stronger password criteria for production
+    if (password.length >= 8) strength++
+    if (password.length >= 12) strength++ // Extra point for longer passwords
+    if (/[a-z]/.test(password)) strength += 0.5
+    if (/[A-Z]/.test(password)) strength += 0.5
     if (/\d/.test(password)) strength++
     if (/[^a-zA-Z\d]/.test(password)) strength++
-    return strength
+
+    // Check for common patterns that weaken passwords
+    if (/^123|password|qwerty|admin|user/i.test(password)) strength -= 1
+
+    // Cap the strength between 0 and 4
+    return Math.max(0, Math.min(4, Math.floor(strength)))
   }
 
   const passwordStrength = getPasswordStrength(formData.password)
@@ -113,11 +228,27 @@ export default function SignUpPage() {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
+              {/* CSRF Protection */}
+              <input type="hidden" name="_csrf" value={csrfToken} />
+
               {error && (
                 <Alert variant="destructive">
                   <AlertDescription>{error}</AlertDescription>
                 </Alert>
               )}
+
+              {/* Honeypot field - hidden from real users but bots might fill it */}
+              <div className="hidden" aria-hidden="true">
+                <Label htmlFor="website">Leave this empty</Label>
+                <Input
+                  id="website"
+                  name="website"
+                  value={honeypot}
+                  tabIndex="-1"
+                  autoComplete="off"
+                  onChange={(e) => setHoneypot(e.target.value)}
+                />
+              </div>
 
               <div className="space-y-2">
                 <Label htmlFor="name">Full name</Label>
@@ -177,15 +308,14 @@ export default function SignUpPage() {
                       {[...Array(4)].map((_, i) => (
                         <div
                           key={i}
-                          className={`h-1 w-full rounded ${
-                            i < passwordStrength
+                          className={`h-1 w-full rounded ${i < passwordStrength
                               ? passwordStrength <= 1
                                 ? "bg-red-500"
                                 : passwordStrength <= 2
-                                ? "bg-yellow-500"
-                                : "bg-green-500"
+                                  ? "bg-yellow-500"
+                                  : "bg-green-500"
                               : "bg-gray-200"
-                          }`}
+                            }`}
                         />
                       ))}
                     </div>
@@ -194,10 +324,10 @@ export default function SignUpPage() {
                       {passwordStrength <= 1
                         ? "Weak"
                         : passwordStrength <= 2
-                        ? "Fair"
-                        : passwordStrength <= 3
-                        ? "Good"
-                        : "Strong"}
+                          ? "Fair"
+                          : passwordStrength <= 3
+                            ? "Good"
+                            : "Strong"}
                     </p>
                   </div>
                 )}

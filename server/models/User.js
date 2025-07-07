@@ -27,6 +27,82 @@ const userSchema = new mongoose.Schema(
       experience: Number,
       skills: [String],
       location: String,
+      phone: String,
+      company: String,
+      bio: String,
+      website: String,
+      github: String,
+      linkedin: String,
+      twitter: String,
+      education: String,
+      certifications: [String],
+      avatar: String, // URL to profile image
+    },
+    scanCount: {
+      type: Number,
+      default: 0,
+    },
+    scanLimit: {
+      type: Number,
+      default: 25,
+    },
+    settings: {
+      notifications: {
+        email: {
+          type: Boolean,
+          default: true,
+        },
+        push: {
+          type: Boolean,
+          default: true,
+        },
+        analysisComplete: {
+          type: Boolean,
+          default: true,
+        },
+        weeklyReport: {
+          type: Boolean,
+          default: false,
+        },
+        securityAlerts: {
+          type: Boolean,
+          default: true,
+        },
+      },
+      privacy: {
+        profileVisible: {
+          type: Boolean,
+          default: false,
+        },
+        shareAnalytics: {
+          type: Boolean,
+          default: true,
+        },
+        dataRetention: {
+          type: String,
+          enum: ["1month", "6months", "1year", "forever"],
+          default: "1year",
+        },
+      },
+      preferences: {
+        theme: {
+          type: String,
+          enum: ["light", "dark", "auto"],
+          default: "light",
+        },
+        language: {
+          type: String,
+          default: "en",
+        },
+        timezone: {
+          type: String,
+          default: "UTC",
+        },
+        autoSave: {
+          type: Boolean,
+          default: true,
+        },
+      },
     },
     subscription: {
       type: {
@@ -79,7 +155,7 @@ userSchema.methods.canPerformScan = function () {
 
 // Increment scan count
 userSchema.methods.incrementScanCount = async function () {
-  this.subscription.scansUsed += 1
+  this.scanCount += 1
   return this.save()
 }
 

@@ -3,6 +3,7 @@ import React from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { Shield, History, Home, User, LogOut, Settings } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { ThemeToggle } from "@/components/ui/theme-toggle"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,7 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useAuth } from "@/hooks/use-auth"
 
 export function Navbar() {
@@ -25,7 +26,8 @@ export function Navbar() {
   }
 
   const getInitials = (name) => {
-    return name
+    if (!name) return "U"
+    return name.split(' ').map(word => word.charAt(0)).join('').toUpperCase().slice(0, 2)
   }
 
   return (
@@ -38,6 +40,7 @@ export function Navbar() {
           </Link>
 
           <div className="flex items-center space-x-4">
+            <ThemeToggle />
             {isAuthenticated ? (
               <>
                 <Button variant="ghost" asChild>
@@ -57,6 +60,9 @@ export function Navbar() {
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                       <Avatar className="h-8 w-8">
+                        {user?.profile?.avatar && (
+                          <AvatarImage src={user.profile.avatar} alt={user.name} />
+                        )}
                         <AvatarFallback>{user ? getInitials(user.name) : "U"}</AvatarFallback>
                       </Avatar>
                     </Button>

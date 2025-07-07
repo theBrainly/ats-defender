@@ -6,37 +6,66 @@ import { Progress } from "@/components/ui/progress";
 import { CheckCircle, XCircle, AlertCircle, TrendingUp } from "lucide-react";
 
 function mapApiResults(apiResults) {
-  if (!apiResults) return null;
+  if (!apiResults) {
+    console.error("No API results provided");
+    return null;
+  }
+  
+  console.log("Mapping API results type:", typeof apiResults, 
+              "isArray:", Array.isArray(apiResults),
+              "keys:", Object.keys(apiResults));
+  
   // Helper to extract array of strings from array of objects or strings
   function extractKeywordArray(arr) {
     if (!Array.isArray(arr)) return [];
     return arr.map(k => (typeof k === 'object' && k !== null && 'keyword' in k) ? k.keyword : k);
   }
+  
+  // Make sure we have a valid response with a score
+  if (!apiResults.overallScore && !apiResults.score) {
+    console.error("Invalid results data: Missing score", apiResults);
+    return null;
+  }
+  
+  // Debug what fields are available
+  console.log("API results keys:", Object.keys(apiResults));
+  console.log("Score fields:", {
+    overallScore: apiResults.overallScore,
+    score: apiResults.score
+  });
+  
   return {
-    score: apiResults.overallScore ?? apiResults.score,
-    matchedKeywords: extractKeywordArray(apiResults.keywordAnalysis?.matched),
-    missingKeywords: extractKeywordArray(apiResults.keywordAnalysis?.missing),
+    score: apiResults.overallScore ?? apiResults.score ?? 0,
+    matchedKeywords: extractKeywordArray(apiResults.keywordAnalysis?.matched || []),
+    missingKeywords: extractKeywordArray(apiResults.keywordAnalysis?.missing || []),
     suggestions: (apiResults.suggestions || []).map(s =>
-      typeof s === "string" ? { suggestion: s } : { suggestion: s.text || s.suggestion || s.description || s }
+      typeof s === "string" ? { suggestion: s } : { suggestion: s.text || s.suggestion || s.description || String(s) }
     ),
     sections: {
       skills: {
         score: apiResults.sectionAnalysis?.skills?.score ?? 0,
-        feedback: apiResults.sectionAnalysis?.skills?.feedback ?? "",
+        feedback: apiResults.sectionAnalysis?.skills?.feedback ?? "Skills assessment",
       },
       experience: {
         score: apiResults.sectionAnalysis?.experience?.score ?? 0,
-        feedback: apiResults.sectionAnalysis?.experience?.feedback ?? "",
+        feedback: apiResults.sectionAnalysis?.experience?.feedback ?? "Experience assessment",
       },
       keywords: {
         score: apiResults.keywordAnalysis?.score ?? 0,
+        feedback: apiResults.keywordAnalysis?.feedback ?? `Keyword matching analysis`,
+      },
+      formatting: {
+        score: apiResults.sectionAnalysis?.formatting?.score ?? 0,
+        feedback: apiResults.sectionAnalysis?.formatting?.feedback ?? "Document formatting assessment",
       },
     },
   };
 }
 
 export function ResultsPanel({ results }) {
+  console.log("ResultsPanel rendered with props:", results ? "Results present" : "No results", results);
   const mappedResults = mapApiResults(results);
+  console.log("ResultsPanel mapped results:", mappedResults ? "Mapped successfully" : "Mapping failed", mappedResults);
   // results = {
   //   score:  number,
   //   matchedKeywords:  [string, …],
@@ -62,7 +91,16 @@ export function ResultsPanel({ results }) {
   };
 
   if (!mappedResults) {
-    return null;
+    console.error("Failed to map results data", results);
+    return (
+      <div className="bg-yellow-50 p-4 rounded-md border border-yellow-200">
+        <p className="text-yellow-800 font-medium">Results could not be displayed</p>
+        <p className="text-yellow-700 text-sm">The analysis results are in an unexpected format or missing required data.</p>
+        <p className="text-yellow-700 text-xs mt-2">
+          Technical details: {results ? `Results type: ${typeof results}, has keys: ${Object.keys(results).join(', ')}` : 'Results are undefined'}
+        </p>
+      </div>
+    );
   }
 
   return (
@@ -97,23 +135,25 @@ export function ResultsPanel({ results }) {
 
       {/* Section Scores */}
       <div className="grid md:grid-cols-3 gap-4">
-        {Object.entries(mappedResults?.sections).map(([sectionName, data]) => (
-          <Card key={sectionName}>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm capitalize">{sectionName}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center space-x-2 mb-2">
-                <span className={`text-2xl font-bold ${getScoreColor(data.score)}`}>
-                  {data.score}%
-                </span>
-                {getScoreIcon(data.score)}
-              </div>
-              <Progress value={data.score} className="h-2 mb-2" />
-              <p className="text-xs text-muted-foreground">{data.feedback}</p>
-            </CardContent>
-          </Card>
-        ))}
+        {mappedResults?.sections && Object.entries(mappedResults.sections)
+          .filter(([, data]) => data && typeof data.score === 'number')
+          .map(([sectionName, data]) => (
+            <Card key={sectionName}>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm capitalize">{sectionName}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center space-x-2 mb-2">
+                  <span className={`text-2xl font-bold ${getScoreColor(data.score)}`}>
+                    {data.score}%
+                  </span>
+                  {getScoreIcon(data.score)}
+                </div>
+                <Progress value={data.score} className="h-2 mb-2" />
+                <p className="text-xs text-muted-foreground">{data.feedback}</p>
+              </CardContent>
+            </Card>
+          ))}
       </div>
 
       {/* Keywords Analysis */}

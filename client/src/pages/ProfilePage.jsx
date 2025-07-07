@@ -32,7 +32,7 @@ import {
 } from "lucide-react"
 
 export default function ProfilePage() {
-  const { user, updateUser } = useAuth()
+  const { user, updateUser, refreshUser } = useAuth()
   const fileInputRef = useRef(null)
   const [isLoading, setIsLoading] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
@@ -119,7 +119,7 @@ export default function ProfilePage() {
 
     try {
       const token = localStorage.getItem("token")
-      const response = await fetch(`/api/auth/upload-avatar`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api"}/auth/upload-avatar`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -154,7 +154,7 @@ export default function ProfilePage() {
       }
 
       const token = localStorage.getItem("token")
-      const response = await fetch(`http://localhost:3000/api/auth/profile`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api"}/auth/profile`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -190,6 +190,7 @@ export default function ProfilePage() {
       }
 
       updateUser(data.user)
+      await refreshUser() // Refresh user data to ensure navbar shows the updated avatar
       setSelectedFile(null)
       setIsEditing(false)
       setMessage("Profile updated successfully!")

@@ -1,6 +1,7 @@
-import React, { useState } from "react"
+import React, { useState, useRef } from "react"
 import { FileText, Loader2, Upload } from "lucide-react"
-import { getDocument, GlobalWorkerOptions, version as pdfjsVersion } from "pdfjs-dist"
+import { getDocument, GlobalWorkerOptions } from "pdfjs-dist"
+import mammoth from "mammoth"
 
 import {
   Card,
@@ -11,40 +12,102 @@ import {
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 
-// ✅ Set the worker source manually (CDN link)
-GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsVersion}/pdf.worker.min.js`
+// ✅ Set the worker source to local file (more reliable)
+GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs'
+console.log('PDF.js worker configured to use local file: /pdf.worker.min.mjs')
 
 function ResumeInput({ value, onChange }) {
   const [isDragOver, setIsDragOver] = useState(false)
   const [isExtracting, setIsExtracting] = useState(false)
   const [extractionProgress, setExtractionProgress] = useState(0)
+  const fileInputRef = useRef(null)
+
+  const handleChooseFileClick = () => {
+    console.log("Choose file button clicked")
+    if (fileInputRef.current) {
+      fileInputRef.current.click()
+    } else {
+      console.error("File input ref not found")
+    }
+  }
 
   const extractTextFromPDF = async (file) => {
     setIsExtracting(true)
     setExtractionProgress(0)
 
     try {
+      console.log("Starting PDF extraction for file:", file.name)
+
       const arrayBuffer = await file.arrayBuffer()
-      const pdf = await getDocument({ data: arrayBuffer }).promise
+      console.log("File read as ArrayBuffer, size:", arrayBuffer.byteLength)
+
+      const loadingTask = getDocument({
+        data: arrayBuffer,
+        // Add options to handle problematic PDFs
+        stopAtErrors: false,
+        isEvalSupported: false,
+        disableFontFace: true
+      })
+
+      const pdf = await loadingTask.promise
+      console.log("PDF loaded successfully, pages:", pdf.numPages)
+
       const numPages = pdf.numPages
       let fullText = ""
 
       for (let i = 1; i <= numPages; i++) {
-        const page = await pdf.getPage(i)
-        const textContent = await page.getTextContent()
-        const pageText = textContent.items.map((item) => item.str).join(" ")
+        try {
+          console.log(`Processing page ${i} of ${numPages}`)
+          const page = await pdf.getPage(i)
+          const textContent = await page.getTextContent()
+          const pageText = textContent.items
+            .filter(item => item.str && item.str.trim()) // Filter out empty strings
+            .map((item) => item.str)
+            .join(" ")
 
-        fullText += pageText + "\n\n"
-        setExtractionProgress(Math.round((i / numPages) * 100))
+          if (pageText.trim()) {
+            fullText += pageText + "\n\n"
+          }
+          setExtractionProgress(Math.round((i / numPages) * 100))
+        } catch (pageError) {
+          console.warn(`Error processing page ${i}:`, pageError)
+          // Continue processing other pages
+        }
       }
 
+      if (!fullText.trim()) {
+        throw new Error("No text could be extracted from the PDF. The file might be image-based or corrupted.")
+      }
+
+      console.log("PDF extraction completed, text length:", fullText.length)
       return fullText.trim()
     } catch (error) {
       console.error("Error extracting text from PDF:", error)
-      throw new Error("Failed to extract text from PDF")
+      let errorMessage = "Failed to extract text from PDF"
+
+      if (error.message.includes("Invalid PDF")) {
+        errorMessage = "The selected file is not a valid PDF"
+      } else if (error.message.includes("worker")) {
+        errorMessage = "PDF processing service is not available. Please try a different file format."
+      } else if (error.message.includes("No text")) {
+        errorMessage = "This PDF appears to be image-based or has no extractable text"
+      }
+
+      throw new Error(errorMessage)
     } finally {
       setIsExtracting(false)
       setExtractionProgress(0)
+    }
+  }
+
+  const extractTextFromDOCX = async (file) => {
+    try {
+      const arrayBuffer = await file.arrayBuffer()
+      const result = await mammoth.extractRawText({ arrayBuffer })
+      return result.value
+    } catch (error) {
+      console.error("Error extracting text from DOCX:", error)
+      throw new Error("Failed to extract text from DOCX")
     }
   }
 
@@ -61,6 +124,8 @@ function ResumeInput({ value, onChange }) {
     const file = event.target.files?.[0]
     if (!file) return
 
+    console.log("File selected:", file.name, file.type)
+
     try {
       let extractedText = ""
 
@@ -68,15 +133,20 @@ function ResumeInput({ value, onChange }) {
         extractedText = await extractTextFromPDF(file)
       } else if (file.type === "text/plain" || file.name.endsWith(".txt")) {
         extractedText = await extractTextFromTextFile(file)
+      } else if (file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" || file.name.endsWith(".docx")) {
+        extractedText = await extractTextFromDOCX(file)
       } else {
-        alert("Unsupported file type. Please upload a PDF or text file.")
+        alert("Unsupported file type. Please upload a PDF, DOCX, or text file.")
         return
       }
 
+      console.log("Text extracted successfully, length:", extractedText.length)
       onChange(extractedText)
     } catch (error) {
       console.error("Error processing file:", error)
-      alert("Failed to process the file. Please try again.")
+      // Show more specific error messages
+      const errorMessage = error.message || "Failed to process the file. Please try again."
+      alert(errorMessage)
     }
   }
 
@@ -94,8 +164,10 @@ function ResumeInput({ value, onChange }) {
         extractedText = await extractTextFromPDF(file)
       } else if (file.type === "text/plain" || file.name.endsWith(".txt")) {
         extractedText = await extractTextFromTextFile(file)
+      } else if (file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" || file.name.endsWith(".docx")) {
+        extractedText = await extractTextFromDOCX(file)
       } else {
-        alert("Unsupported file type. Please upload a PDF or text file.")
+        alert("Unsupported file type. Please upload a PDF, DOCX, or text file.")
         return
       }
 
@@ -125,11 +197,10 @@ function ResumeInput({ value, onChange }) {
       </CardHeader>
       <CardContent>
         <div
-          className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
-            isDragOver
+          className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${isDragOver
               ? "border-blue-500 bg-blue-50"
               : "border-gray-300 hover:border-blue-300"
-          }`}
+            }`}
           onDrop={handleDrop}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
@@ -153,18 +224,26 @@ function ResumeInput({ value, onChange }) {
               <p className="text-sm text-gray-500 mb-2">
                 Drag and drop your resume here, or
               </p>
-              <label htmlFor="resume-upload" className="cursor-pointer inline-block">
-                <Button>Choose File</Button>
+              <div className="flex flex-col items-center">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="flex items-center space-x-2"
+                  onClick={handleChooseFileClick}
+                >
+                  <FileText className="h-4 w-4" />
+                  <span>Choose File</span>
+                </Button>
                 <input
-                  id="resume-upload"
+                  ref={fileInputRef}
                   type="file"
-                  accept=".txt,.pdf"
+                  accept=".txt,.pdf,.docx"
                   onChange={handleFileUpload}
-                  className=""
+                  className="hidden"
                 />
-              </label>
+              </div>
               <p className="text-xs text-gray-400 mt-2">
-                Supported: PDF, TXT (DOCX coming soon)
+                Supported: PDF, DOCX, TXT
               </p>
             </>
           )}

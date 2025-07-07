@@ -4,7 +4,7 @@ import User from '../models/User.js';
 
 export const register = async (req, res) => {
   try {
-    const { username, email, password } = req.body;
+    const { name, email, password } = req.body;
 
     // Check if user exists
     const existingUser = await User.findOne({ email });
@@ -18,7 +18,7 @@ export const register = async (req, res) => {
 
     // Create user
     const newUser = new User({
-      username,
+      name,
       email,
       password: hashedPassword,
     });
@@ -28,11 +28,11 @@ export const register = async (req, res) => {
     // Create token
     const token = jwt.sign(
       { id: newUser._id, email: newUser.email },
-      process.env.JWT_SECRET,
+      process.env.ACCESS_SECERT_TOKEN,
       { expiresIn: '1d' }
     );
 
-    res.status(201).json({ token, user: { id: newUser._id, username, email } });
+    res.status(201).json({ token, user: { id: newUser._id, name, email } });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -57,11 +57,11 @@ export const login = async (req, res) => {
     // Create token
     const token = jwt.sign(
       { id: user._id, email: user.email },
-      process.env.JWT_SECRET,
+      process.env.ACCESS_SECERT_TOKEN,
       { expiresIn: '1d' }
     );
 
-    res.json({ token, user: { id: user._id, username: user.username, email } });
+    res.json({ token, user: { id: user._id, name: user.name, email } });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
