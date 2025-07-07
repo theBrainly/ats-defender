@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react"
 import axios from "axios"
 import { AlertTriangle, AlertCircle, Info, CheckCircle } from "lucide-react"
 
-import { Navbar } from "@/components/navbar"
+import { Navbar } from "@/components/Navbar"
 import { ResumeInput } from "@/components/ResumeInput"
 import JDInput from "@/components/JDInput"
 import { ScanButton } from "@/components/ScanButton"
