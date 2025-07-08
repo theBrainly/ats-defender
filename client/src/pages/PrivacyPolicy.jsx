@@ -242,13 +242,31 @@ export default function PrivacyPolicy() {
                 </p>
                 <div className="bg-gray-100 p-4 rounded-md">
                   <p className="text-gray-700">
-                    <strong>Email:</strong> privacy@atsdefender.com<br />
+                    <strong>Email:</strong> officialmailakashsharma@gmail.com<br />
                     <strong>Website:</strong>{" "}
                     <Link to="/contact" className="text-primary hover:text-primary/80 underline">
                       Contact Form
                     </Link><br />
+                    <strong>Developer:</strong> Akash Sharma<br />
                     <strong>Response Time:</strong> Within 48 hours
                   </p>
+                </div>
+              </section>
+
+              <Separator />
+
+              <section>
+                <h2 className="text-2xl font-bold text-gray-900 mb-3">13. About the Developer</h2>
+                <div className="bg-blue-50 border border-blue-200 rounded-md p-4">
+                  <p className="text-blue-800">
+                    <strong>ATS Defender</strong> is developed and maintained by <strong>Akash Sharma</strong>, 
+                    a passionate developer dedicated to helping job seekers optimize their resumes for success.
+                  </p>
+                  <div className="mt-3 space-y-1 text-sm text-blue-700">
+                    <p><strong>Built with:</strong> React + Vite + TailwindCSS</p>
+                    <p><strong>Contact:</strong> officialmailakashsharma@gmail.com</p>
+                    <p><strong>Copyright:</strong> © 2025 Akash Sharma. All rights reserved.</p>
+                  </div>
                 </div>
               </section>
             </div>

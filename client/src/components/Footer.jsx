@@ -17,6 +17,9 @@ export function Footer() {
             <p className="text-sm text-gray-600">
               Optimize your resume for Applicant Tracking Systems and land your dream job.
             </p>
+            <p className="text-xs text-gray-500">
+              Built by <strong>Akash Sharma</strong>
+            </p>
             <div className="flex space-x-4">
               <a href="#" className="text-gray-400 hover:text-primary">
                 <Twitter className="h-5 w-5" />
@@ -72,7 +75,7 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <a href="mailto:support@atsdefender.com" className="text-gray-600 hover:text-primary">
+                <a href="mailto:officialmailakashsharma@gmail.com" className="text-gray-600 hover:text-primary">
                   Email Support
                 </a>
               </li>
@@ -99,14 +102,10 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <a href="#" className="text-gray-600 hover:text-primary">
-                  Cookie Policy
-                </a>
+                <span className="text-gray-600">© 2025 Akash Sharma</span>
               </li>
               <li>
-                <a href="#" className="text-gray-600 hover:text-primary">
-                  Security
-                </a>
+                <span className="text-gray-600">All rights reserved</span>
               </li>
             </ul>
           </div>
@@ -116,13 +115,13 @@ export function Footer() {
 
         <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
           <div className="text-sm text-gray-600">
-            © {new Date().getFullYear()} ATS Defender. All rights reserved.
+            © {new Date().getFullYear()} ATS Defender. All rights reserved to Akash Sharma.
           </div>
           <div className="flex items-center space-x-4 text-sm text-gray-600">
-            <span>Made with ❤️ for job seekers</span>
+            <span>Built with ❤️ by Akash Sharma</span>
             <Mail className="h-4 w-4" />
-            <a href="mailto:hello@atsdefender.com" className="hover:text-primary">
-              hello@atsdefender.com
+            <a href="mailto:officialmailakashsharma@gmail.com" className="hover:text-primary">
+              officialmailakashsharma@gmail.com
             </a>
           </div>
         </div>

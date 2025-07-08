@@ -1,6 +1,100 @@
-# ATS Defender
+# 🛡️ ATS Defender
 
-ATS Defender is an application designed to help job seekers optimize their resumes for Applicant Tracking Systems (ATS). The application analyzes resumes against job descriptions to provide detailed feedback and suggestions for improvement.
+**Optimize your resume for Applicant Tracking Systems and land your dream job!**
+
+[![Built with React](https://img.shields.io/badge/Built%20with-React-61DAFB?style=flat-square&logo=react)](https://reactjs.org/)
+[![Powered by Vite](https://img.shields.io/badge/Powered%20by-Vite-646CFF?style=flat-square&logo=vite)](https://vitejs.dev/)
+[![Styled with Tailwind](https://img.shields.io/badge/Styled%20with-Tailwind%20CSS-06B6D4?style=flat-square&logo=tailwindcss)](https://tailwindcss.com/)
+
+## 🚀 About
+
+ATS Defender is a modern web application that helps job seekers optimize their resumes for Applicant Tracking Systems (ATS). Built with React and Vite by **Akash Sharma**, it provides an intuitive interface for analyzing resumes against job descriptions and offering improvement suggestions.
+
+## ✨ Features
+
+- **🔍 Resume Analysis**: Upload and analyze your resume against job descriptions
+- **📊 ATS Scoring**: Get detailed scoring on ATS compatibility
+- **💡 Smart Suggestions**: Receive actionable recommendations for improvement
+- **📱 Responsive Design**: Works seamlessly on desktop and mobile devices
+- **🔐 Secure Authentication**: Protected user accounts with JWT authentication
+- **📝 Scan History**: Track your previous resume scans and improvements
+- **🎨 Modern UI**: Clean, professional interface built with shadcn/ui components
+
+## 🛠️ Technology Stack
+
+- **Frontend**: React 19, Vite, TailwindCSS
+- **Backend**: Node.js, Express, MongoDB
+- **Styling**: shadcn/ui components
+- **Icons**: Lucide React
+- **Authentication**: JWT with secure context management
+- **File Processing**: PDF.js, Mammoth.js for document parsing
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js (v16 or newer)
+- npm or yarn package manager
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/theBrainly/ats-defender.git
+   cd ats-defender
+   ```
+
+2. **Install dependencies**
+   ```bash
+   # Install client dependencies
+   cd client && npm install
+   
+   # Install server dependencies
+   cd ../server && npm install
+   ```
+
+3. **Start development servers**
+   ```bash
+   # Backend (Terminal 1)
+   cd server && npm run dev
+   
+   # Frontend (Terminal 2)
+   cd client && npm run dev
+   ```
+
+4. **Open your browser**
+   Navigate to `http://localhost:5173`
+
+## 📖 Usage
+
+1. **Sign Up/Sign In**: Create an account to access features
+2. **Upload Resume**: Paste text or upload PDF/DOCX files
+3. **Add Job Description**: Paste the target job description
+4. **Analyze**: Get your ATS compatibility score
+5. **Improve**: Follow suggestions to optimize your resume
+
+## 👨‍💻 Developer
+
+**Akash Sharma**
+- 📧 Email: [officialmailakashsharma@gmail.com](mailto:officialmailakashsharma@gmail.com)
+- 🐙 GitHub: [@theBrainly](https://github.com/theBrainly)
+- ⏰ Response Time: Within 24-48 hours
+
+## 📞 Support
+
+Need help? Contact us:
+- 📧 **Email**: [officialmailakashsharma@gmail.com](mailto:officialmailakashsharma@gmail.com)
+- 🌐 **Contact Form**: Available at `/contact` in the app
+- 📖 **Documentation**: Comprehensive guides included
+
+## 📄 License
+
+**© 2025 Akash Sharma. All rights reserved.**
+
+This project is proprietary software developed by Akash Sharma.
+
+---
+
+*Built with ❤️ using React + Vite*
 
 ## Project Structure
 

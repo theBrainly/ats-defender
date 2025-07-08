@@ -166,12 +166,31 @@ export default function TermsOfService() {
               <Separator />
 
               <section>
-                <h2 className="text-2xl font-bold text-gray-900 mb-3">12. Contact Information</h2>
+                <h2 className="text-2xl font-bold text-gray-900 mb-3">12. Developer Information</h2>
+                <p className="text-gray-700 leading-relaxed mb-3">
+                  ATS Defender is developed and maintained by <strong>Akash Sharma</strong>.
+                </p>
+                <div className="bg-blue-50 border border-blue-200 rounded-md p-3">
+                  <p className="text-blue-800 text-sm">
+                    <strong>Developer:</strong> Akash Sharma<br />
+                    <strong>Contact:</strong> officialmailakashsharma@gmail.com<br />
+                    <strong>Copyright:</strong> © 2025 Akash Sharma. All rights reserved.
+                  </p>
+                </div>
+              </section>
+
+              <Separator />
+
+              <section>
+                <h2 className="text-2xl font-bold text-gray-900 mb-3">13. Contact Information</h2>
                 <p className="text-gray-700 leading-relaxed">
                   If you have any questions about these Terms of Service, please contact us at{" "}
                   <Link to="/contact" className="text-primary hover:text-primary/80 underline">
                     our contact page
-                  </Link>.
+                  </Link> or email us directly at{" "}
+                  <a href="mailto:officialmailakashsharma@gmail.com" className="text-primary hover:text-primary/80 underline">
+                    officialmailakashsharma@gmail.com
+                  </a>.
                 </p>
               </section>
             </div>

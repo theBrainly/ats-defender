@@ -296,7 +296,7 @@ export default function ContactPage() {
                   <Mail className="h-5 w-5 text-primary mt-1" />
                   <div>
                     <h3 className="font-medium">Email Support</h3>
-                    <p className="text-sm text-gray-600">support@atsdefender.com</p>
+                    <p className="text-sm text-gray-600">officialmailakashsharma@gmail.com</p>
                     <p className="text-xs text-gray-500">We typically respond within 24 hours</p>
                   </div>
                 </div>
@@ -356,8 +356,8 @@ export default function ContactPage() {
                   <p className="text-sm text-red-800">
                     <strong>Security or Privacy Concerns:</strong><br />
                     If you believe there's a security issue or privacy breach, please email us immediately at{" "}
-                    <a href="mailto:security@atsdefender.com" className="underline font-medium">
-                      security@atsdefender.com
+                    <a href="mailto:officialmailakashsharma@gmail.com" className="underline font-medium">
+                      officialmailakashsharma@gmail.com
                     </a>
                   </p>
                 </div>
