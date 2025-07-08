@@ -21,7 +21,8 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.5.0",
     "multer": "^2.0.1",
-    "multer-storage-cloudinary": "^4.0.0"
+    "multer-storage-cloudinary": "^4.0.0",
+     "axios": "^1.6.2"
   },
   "devDependencies": {
     "jest": "^29.7.0",
