@@ -1,7 +1,7 @@
 import React from "react"
 // import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
-import { Shield, History, Home, User, LogOut, Settings } from "lucide-react"
+import { Shield, History, Home, User, LogOut, Settings, Mail } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
 import {
@@ -53,6 +53,12 @@ export function Navbar() {
                   <Link to="/history" className="flex items-center space-x-2">
                     <History className="h-4 w-4" />
                     <span>History</span>
+                  </Link>
+                </Button>
+                <Button variant="ghost" asChild>
+                  <Link to="/contact" className="flex items-center space-x-2">
+                    <Mail className="h-4 w-4" />
+                    <span>Contact</span>
                   </Link>
                 </Button>
 
