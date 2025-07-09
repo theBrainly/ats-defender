@@ -1,9 +1,9 @@
-
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 
 import { AuthProvider } from "./contexts/auth-context"
 import { ThemeProvider } from "./components/ui/theme-provider"
+import { useAuth } from "./hooks/use-auth";
 
 import Home from './pages/Home.jsx';
 import HistoryPage from './pages/History.jsx';
@@ -17,16 +17,19 @@ import TermsOfService from './pages/TermsOfService';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import ContactPage from './pages/ContactPage';
 import NotFoundPage from './pages/NotFoundPage';
+import GuestPage from './pages/GuestPage';
 
 
 
 function App() {
+  const { isAuthenticated } = useAuth();
   return (
     <ThemeProvider defaultTheme="light" storageKey="ats-defender-theme">
       <AuthProvider>
         <Router>
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={isAuthenticated ? <Home /> : <GuestPage />} />
+            <Route path="/app" element={<Home />} />
             <Route path="/history" element={<HistoryPage />} />
             <Route path="/auth/signin" element={<SignInPage />} />
             <Route path="/auth/signup" element={<SignUpPage />} />

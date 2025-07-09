@@ -11,23 +11,24 @@ import {
 } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
+import { logError } from "@/lib/logger"
+import { Toast } from "@/components/ui/toast"
 
 // ✅ Set the worker source to local file (more reliable)
 GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs'
-console.log('PDF.js worker configured to use local file: /pdf.worker.min.mjs')
 
 function ResumeInput({ value, onChange }) {
   const [isDragOver, setIsDragOver] = useState(false)
   const [isExtracting, setIsExtracting] = useState(false)
   const [extractionProgress, setExtractionProgress] = useState(0)
+  const [toast, setToast] = useState({ message: "", type: "info" });
   const fileInputRef = useRef(null)
 
   const handleChooseFileClick = () => {
-    console.log("Choose file button clicked")
     if (fileInputRef.current) {
       fileInputRef.current.click()
     } else {
-      console.error("File input ref not found")
+      logError("File input ref not found")
     }
   }
 
@@ -36,10 +37,7 @@ function ResumeInput({ value, onChange }) {
     setExtractionProgress(0)
 
     try {
-      console.log("Starting PDF extraction for file:", file.name)
-
       const arrayBuffer = await file.arrayBuffer()
-      console.log("File read as ArrayBuffer, size:", arrayBuffer.byteLength)
 
       const loadingTask = getDocument({
         data: arrayBuffer,
@@ -50,14 +48,12 @@ function ResumeInput({ value, onChange }) {
       })
 
       const pdf = await loadingTask.promise
-      console.log("PDF loaded successfully, pages:", pdf.numPages)
 
       const numPages = pdf.numPages
       let fullText = ""
 
       for (let i = 1; i <= numPages; i++) {
         try {
-          console.log(`Processing page ${i} of ${numPages}`)
           const page = await pdf.getPage(i)
           const textContent = await page.getTextContent()
           const pageText = textContent.items
@@ -79,10 +75,9 @@ function ResumeInput({ value, onChange }) {
         throw new Error("No text could be extracted from the PDF. The file might be image-based or corrupted.")
       }
 
-      console.log("PDF extraction completed, text length:", fullText.length)
       return fullText.trim()
     } catch (error) {
-      console.error("Error extracting text from PDF:", error)
+      logError("Error extracting text from PDF:", error)
       let errorMessage = "Failed to extract text from PDF"
 
       if (error.message.includes("Invalid PDF")) {
@@ -106,7 +101,7 @@ function ResumeInput({ value, onChange }) {
       const result = await mammoth.extractRawText({ arrayBuffer })
       return result.value
     } catch (error) {
-      console.error("Error extracting text from DOCX:", error)
+      logError("Error extracting text from DOCX:", error)
       throw new Error("Failed to extract text from DOCX")
     }
   }
@@ -124,8 +119,6 @@ function ResumeInput({ value, onChange }) {
     const file = event.target.files?.[0]
     if (!file) return
 
-    console.log("File selected:", file.name, file.type)
-
     try {
       let extractedText = ""
 
@@ -136,17 +129,15 @@ function ResumeInput({ value, onChange }) {
       } else if (file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" || file.name.endsWith(".docx")) {
         extractedText = await extractTextFromDOCX(file)
       } else {
-        alert("Unsupported file type. Please upload a PDF, DOCX, or text file.")
+        setToast({ message: "Unsupported file type. Please upload a PDF, DOCX, or text file.", type: "error" })
         return
       }
 
-      console.log("Text extracted successfully, length:", extractedText.length)
       onChange(extractedText)
     } catch (error) {
-      console.error("Error processing file:", error)
-      // Show more specific error messages
+      logError("Error processing file:", error)
       const errorMessage = error.message || "Failed to process the file. Please try again."
-      alert(errorMessage)
+      setToast({ message: errorMessage, type: "error" })
     }
   }
 
@@ -167,14 +158,14 @@ function ResumeInput({ value, onChange }) {
       } else if (file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" || file.name.endsWith(".docx")) {
         extractedText = await extractTextFromDOCX(file)
       } else {
-        alert("Unsupported file type. Please upload a PDF, DOCX, or text file.")
+        setToast({ message: "Unsupported file type. Please upload a PDF, DOCX, or text file.", type: "error" })
         return
       }
 
       onChange(extractedText)
     } catch (error) {
-      console.error("Error processing file:", error)
-      alert("Failed to process the file. Please try again.")
+      logError("Error processing file:", error)
+      setToast({ message: "Failed to process the file. Please try again.", type: "error" })
     }
   }
 
@@ -188,75 +179,78 @@ function ResumeInput({ value, onChange }) {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-lg font-bold">
-          <FileText className="h-5 w-5" />
-          Resume Content
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div
-          className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${isDragOver
-              ? "border-blue-500 bg-blue-50"
-              : "border-gray-300 hover:border-blue-300"
-            }`}
-          onDrop={handleDrop}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-        >
-          {isExtracting ? (
-            <div>
-              <Loader2 className="h-8 w-8 mx-auto animate-spin text-blue-500" />
-              <p className="text-sm text-gray-500">
-                Extracting... {extractionProgress}%
-              </p>
-              <div className="w-full bg-gray-200 rounded h-2 mt-2">
-                <div
-                  className="bg-blue-500 h-2 rounded"
-                  style={{ width: `${extractionProgress}%` }}
-                />
+    <>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-lg font-bold">
+            <FileText className="h-5 w-5" />
+            Resume Content
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div
+            className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${isDragOver
+                ? "border-blue-500 bg-blue-50"
+                : "border-gray-300 hover:border-blue-300"
+              }`}
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+          >
+            {isExtracting ? (
+              <div>
+                <Loader2 className="h-8 w-8 mx-auto animate-spin text-blue-500" />
+                <p className="text-sm text-gray-500">
+                  Extracting... {extractionProgress}%
+                </p>
+                <div className="w-full bg-gray-200 rounded h-2 mt-2">
+                  <div
+                    className="bg-blue-500 h-2 rounded"
+                    style={{ width: `${extractionProgress}%` }}
+                  />
+                </div>
               </div>
-            </div>
-          ) : (
-            <>
-              <Upload className="h-8 w-8 mx-auto mb-2 text-gray-400" />
-              <p className="text-sm text-gray-500 mb-2">
-                Drag and drop your resume here, or
-              </p>
-              <div className="flex flex-col items-center">
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="flex items-center space-x-2"
-                  onClick={handleChooseFileClick}
-                >
-                  <FileText className="h-4 w-4" />
-                  <span>Choose File</span>
-                </Button>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept=".txt,.pdf,.docx"
-                  onChange={handleFileUpload}
-                  className="hidden"
-                />
-              </div>
-              <p className="text-xs text-gray-400 mt-2">
-                Supported: PDF, DOCX, TXT
-              </p>
-            </>
-          )}
-        </div>
+            ) : (
+              <>
+                <Upload className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+                <p className="text-sm text-gray-500 mb-2">
+                  Drag and drop your resume here, or
+                </p>
+                <div className="flex flex-col items-center">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="flex items-center space-x-2"
+                    onClick={handleChooseFileClick}
+                  >
+                    <FileText className="h-4 w-4" />
+                    <span>Choose File</span>
+                  </Button>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".txt,.pdf,.docx"
+                    onChange={handleFileUpload}
+                    className="hidden"
+                  />
+                </div>
+                <p className="text-xs text-gray-400 mt-2">
+                  Supported: PDF, DOCX, TXT
+                </p>
+              </>
+            )}
+          </div>
 
-        <Textarea
-          placeholder="Or paste your resume content here..."
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          rows={12}
-        />
-      </CardContent>
-    </Card>
+          <Textarea
+            placeholder="Or paste your resume content here..."
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            rows={12}
+          />
+        </CardContent>
+      </Card>
+      <Toast message={toast.message} type={toast.type} onClose={() => setToast({ message: "", type: "info" })} />
+    </>
   )
 }
 

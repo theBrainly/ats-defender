@@ -13,6 +13,9 @@ import { useAuth } from "@/hooks/use-auth"
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
 import { Progress } from "@/components/ui/progress"
 import { cn } from "@/lib/utils"
+import { logError } from "@/lib/logger"
+import { getToken } from "@/lib/token"
+import GuestPage from "@/pages/GuestPage"
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api"
 
@@ -38,7 +41,7 @@ export default function Home() {
       if (!isAuthenticated) return
 
       try {
-        const token = localStorage.getItem("token")
+        const token = getToken()
         const response = await axios.get(
           `${API_BASE_URL}/analysis/scan-info`,
           {
@@ -52,7 +55,8 @@ export default function Home() {
           setScanLimitInfo(response.data)
         }
       } catch (error) {
-        console.error("Failed to fetch scan limit info:", error)
+        // console.error("Failed to fetch scan limit info:", error)
+        logError("Failed to fetch scan limit info:", error)
       }
     }
 
@@ -69,7 +73,6 @@ export default function Home() {
         (prevInputs.resumeText !== resumeText || 
          prevInputs.jobDescription !== jobDescription || 
          prevInputs.jobTitle !== jobTitle)) {
-      console.log("Inputs changed, resetting scan results");
       setScanResults(null);
     }
     // Update ref with current values
@@ -135,7 +138,7 @@ export default function Home() {
     setIsScanning(true)
 
     try {
-      const token = localStorage.getItem("token")
+      const token = getToken()
 
       // Sanitize inputs before sending to server
       const sanitizedResumeText = sanitizeInput(resumeText)
@@ -161,16 +164,14 @@ export default function Home() {
       )
 
       const data = response.data
-      console.log("Full API response:", data)
 
       // Ensure we have results before proceeding
       if (!data || !data.results) {
-        console.error("Invalid response format - missing results property:", data)
+        // console.error("Invalid response format - missing results property:", data)
+        logError("Invalid response format - missing results property:", data)
         throw new Error("Invalid response format from server");
       }
       
-      console.log("API returned results structure:", typeof data.results, Array.isArray(data.results), Object.keys(data.results))
-
       // Update scan limit info after successful scan
       if (isAuthenticated && data.scanCount !== undefined) {
         setScanLimitInfo({
@@ -182,11 +183,10 @@ export default function Home() {
       }
 
       // Set results in state for the ResultsPanel to use
-      console.log("Setting scan results to:", data.results)
-      
       // Ensure we have valid results
       if (!data.results || typeof data.results !== 'object') {
-        console.error("Invalid results format:", data.results);
+        // console.error("Invalid results format:", data.results);
+        logError("Invalid results format:", data.results);
         throw new Error("Server returned invalid results format");
       }
       
@@ -203,17 +203,19 @@ export default function Home() {
       // Track analytics (if implemented)
       try {
         // This would be where you'd track usage for analytics purposes
-        console.log("Scan completed successfully", {
-          jobTitle: sanitizedJobTitle,
-          hasCompany: !!sanitizedCompany,
-          resumeLength: sanitizedResumeText.length,
-          jobDescriptionLength: sanitizedJobDescription.length,
-        })
+        // console.log("Scan completed successfully", {
+        //   jobTitle: sanitizedJobTitle,
+        //   hasCompany: !!sanitizedCompany,
+        //   resumeLength: sanitizedResumeText.length,
+        //   jobDescriptionLength: sanitizedJobDescription.length,
+        // })
       } catch (analyticsError) {
-        console.error("Analytics error:", analyticsError)
+        // console.error("Analytics error:", analyticsError)
+        logError("Analytics error:", analyticsError)
       }
     } catch (error) {
-      console.error("Scan failed:", error)
+      // console.error("Scan failed:", error)
+      logError("Scan failed:", error)
 
       // Handle different error scenarios
       if (axios.isAxiosError(error)) {
@@ -385,9 +387,9 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="w-full flex mb-8 mt-8 sm:mt-12 md:mt-24 lg:mt-36">
-            <div className="flex-1"></div>
-            <div className="flex-none">
+          <div className="w-full flex flex-col sm:flex-row mb-8 mt-8 sm:mt-12 md:mt-24 lg:mt-36 items-center">
+            <div className="flex-1 hidden sm:block"></div>
+            <div className="flex-none w-full sm:w-auto">
               <ScanButton
                 onClick={handleScan}
                 isLoading={isScanning}
@@ -398,9 +400,10 @@ export default function Home() {
                   isScanning ||
                   !scanLimitInfo.canScan
                 }
+                className="w-full sm:w-auto"
               />
             </div>
-            <div className="flex-1"></div>
+            <div className="flex-1 hidden sm:block"></div>
           </div>
 
           {/* Debug element to confirm scanResults state */}

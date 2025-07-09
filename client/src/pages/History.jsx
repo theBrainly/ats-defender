@@ -33,6 +33,8 @@ import {
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
 import { Skeleton } from "@/components/ui/skeleton"
 import { toast } from "sonner"
+import { logError } from "@/lib/logger"
+import { getToken, removeToken } from "@/lib/token"
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api"
 
@@ -54,12 +56,11 @@ export default function HistoryPage() {
 
   // Memoize the fetchHistory function to prevent unnecessary re-renders
   const fetchHistory = useCallback(async () => {
-    console.log("[History] Fetching history...")
     setLoading(true)
     setError(null)
 
     try {
-      const token = localStorage.getItem("token")
+      const token = getToken()
       if (!token) {
         throw new Error("Authentication token not found")
       }
@@ -79,7 +80,7 @@ export default function HistoryPage() {
       if (response.status === 401) {
         // Handle expired token
         toast.error("Your session has expired. Please log in again.")
-        localStorage.removeItem("token")
+        removeToken()
         navigate("/signin")
         return
       }
@@ -89,7 +90,6 @@ export default function HistoryPage() {
       }
 
       const data = await response.json()
-      console.log("[History] Fetch success:", data)
 
       if (data.success) {
         setHistoryItems(data.history || [])
@@ -105,21 +105,15 @@ export default function HistoryPage() {
 
       // Track page view analytics
       try {
-        console.log("History page viewed", {
-          userId: user?.id,
-          page: pagination.page,
-          itemsCount: data.history?.length || 0
-        })
       } catch (analyticsError) {
-        console.error("[Analytics] Error:", analyticsError)
+        logError("[Analytics] Error:", analyticsError)
       }
     } catch (e) {
-      console.error("[History] Fetch error:", e)
+      logError("[History] Fetch error:", e)
       setError(e.message)
       toast.error(`Failed to load history: ${e.message}`)
     } finally {
       setLoading(false)
-      console.log("[History] Fetch loading done.")
     }
   }, [pagination.page, pagination.limit, navigate, user?.id])
 
@@ -140,7 +134,7 @@ export default function HistoryPage() {
     setIsDeleting(true)
 
     try {
-      const token = localStorage.getItem("token")
+      const token = getToken()
       if (!token) {
         throw new Error("Authentication token not found")
       }
@@ -155,7 +149,7 @@ export default function HistoryPage() {
 
       if (response.status === 401) {
         toast.error("Your session has expired. Please log in again.")
-        localStorage.removeItem("token")
+        removeToken()
         navigate("/signin")
         return
       }
@@ -168,8 +162,6 @@ export default function HistoryPage() {
       if (data.success) {
         setHistoryItems((prev) => prev.filter((item) => item.id !== itemToDelete.id))
         toast.success("Scan record deleted successfully")
-        console.log(`[History] Deleted item with id: ${itemToDelete.id}`)
-
         // Refresh history if current page becomes empty
         if (historyItems.length === 1 && pagination.page > 1) {
           setPagination((prev) => ({ ...prev, page: prev.page - 1 }))
@@ -180,19 +172,15 @@ export default function HistoryPage() {
 
         // Track deletion analytics
         try {
-          console.log("Scan record deleted", {
-            userId: user?.id,
-            scanId: itemToDelete.id
-          })
         } catch (analyticsError) {
-          console.error("[Analytics] Error:", analyticsError)
+          logError("[Analytics] Error:", analyticsError)
         }
       } else {
         throw new Error(data.message || "Failed to delete")
       }
     } catch (error) {
       toast.error(`Error deleting scan: ${error.message}`)
-      console.error("[History] Error deleting item:", error)
+      logError("[History] Error deleting item:", error)
     } finally {
       setIsDeleting(false)
       setDeleteDialogOpen(false)
@@ -201,17 +189,12 @@ export default function HistoryPage() {
   }
 
   const handleView = (id) => {
-    console.log(`[History] View action for id: ${id}`)
     navigate(`/analysis/${id}`)
 
     // Track view analytics
     try {
-      console.log("Scan details viewed", {
-        userId: user?.id,
-        scanId: id
-      })
     } catch (analyticsError) {
-      console.error("[Analytics] Error:", analyticsError)
+      logError("[Analytics] Error:", analyticsError)
     }
   }
 

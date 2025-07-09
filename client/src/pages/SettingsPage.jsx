@@ -26,6 +26,8 @@ import {
     Loader2,
     Save,
 } from "lucide-react"
+import { logError } from "@/lib/logger"
+import { getToken } from "@/lib/token"
 
 export default function SettingsPage() {
     const { signOut } = useAuth()
@@ -91,7 +93,7 @@ export default function SettingsPage() {
 
         setIsLoading(true)
         try {
-            const token = localStorage.getItem("token")
+            const token = getToken()
             const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api"}/auth/change-password`, {
                 method: "PUT",
                 headers: {
@@ -119,7 +121,7 @@ export default function SettingsPage() {
                 showMessage(data.message || "Failed to update password", "error")
             }
         } catch (err) {
-            console.error("Password change error:", err)
+            logError("Password change error:", err)
             showMessage("An error occurred while updating password", "error")
         } finally {
             setIsLoading(false)
@@ -129,8 +131,7 @@ export default function SettingsPage() {
     const handleExportData = async () => {
         setIsLoading(true)
         try {
-            const token = localStorage.getItem("token")
-            console.log("Requesting data export...");
+            const token = getToken()
             const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api"}/auth/export-data`, {
                 method: "GET",
                 headers: {
@@ -138,7 +139,6 @@ export default function SettingsPage() {
                 },
             })
 
-            console.log("Export response status:", response.status);
             if (response.ok) {
                 const blob = await response.blob()
                 const url = window.URL.createObjectURL(blob)
@@ -152,11 +152,11 @@ export default function SettingsPage() {
                 showMessage("Data exported successfully", "success")
             } else {
                 const errorData = await response.json().catch(() => ({}))
-                console.error("Export failed:", errorData);
+                logError("Export failed:", errorData);
                 showMessage(errorData.message || "Failed to export data", "error")
             }
         } catch (err) {
-            console.error("Data export error:", err)
+            logError("Data export error:", err)
             showMessage("An error occurred while exporting data", "error")
         } finally {
             setIsLoading(false)
@@ -166,7 +166,7 @@ export default function SettingsPage() {
     const handleDeleteAccount = async () => {
         setIsLoading(true)
         try {
-            const token = localStorage.getItem("token")
+            const token = getToken()
             const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api"}/auth/delete-account`, {
                 method: "DELETE",
                 headers: {
@@ -183,7 +183,7 @@ export default function SettingsPage() {
                 showMessage(data.message || "Failed to delete account", "error")
             }
         } catch (err) {
-            console.error("Account deletion error:", err)
+            logError("Account deletion error:", err)
             showMessage("An error occurred while deleting account", "error")
         } finally {
             setIsLoading(false)
@@ -194,7 +194,7 @@ export default function SettingsPage() {
     const handleSaveSettings = async () => {
         setIsLoading(true)
         try {
-            const token = localStorage.getItem("token")
+            const token = getToken()
             const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api"}/auth/settings`, {
                 method: "PUT",
                 headers: {
@@ -215,7 +215,7 @@ export default function SettingsPage() {
                 showMessage(data.message || "Failed to save settings", "error")
             }
         } catch (err) {
-            console.error("Settings save error:", err)
+            logError("Settings save error:", err)
             showMessage("An error occurred while saving settings", "error")
         } finally {
             setIsLoading(false)

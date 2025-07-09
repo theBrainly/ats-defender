@@ -29,6 +29,7 @@ import {
 } from "lucide-react"
 import { useAuth } from "@/hooks/use-auth"
 import { ProtectedRoute } from "@/components/protected-route"
+import { getToken } from "@/lib/token"
 
 export default function AnalysisDetailPage() {
   const { id } = useParams()
@@ -51,7 +52,7 @@ export default function AnalysisDetailPage() {
     setError(null)
 
     try {
-      const token = localStorage.getItem("token")
+      const token = getToken()
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api"}/analysis/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,

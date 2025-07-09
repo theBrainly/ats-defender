@@ -1,3 +1,5 @@
+// This file is a backup and can be deleted or archived for production.
+
 import React, { useState, useEffect } from "react"
 import axios from "axios"
 import { AlertTriangle, AlertCircle, Info, CheckCircle } from "lucide-react"

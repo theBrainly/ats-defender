@@ -14,6 +14,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Checkbox } from "@/components/ui/checkbox"
 import { useAuth } from "@/hooks/use-auth"
 import { Loader2, Eye, EyeOff, Shield, Check } from "lucide-react"
+import { logError } from "@/lib/logger"
 
 export default function SignUpPage() {
   const [formData, setFormData] = useState({
@@ -86,7 +87,6 @@ export default function SignUpPage() {
   const validateHuman = () => {
     // If the honeypot field is filled, it's likely a bot
     if (honeypot) {
-      console.log("Bot detected")
       setError("There was a problem with your submission")
       return false
     }
@@ -152,7 +152,7 @@ export default function SignUpPage() {
       })
     } catch (err) {
       // Log detailed error for monitoring systems (in production, use a service like Sentry)
-      console.error("Signup error:", err)
+      logError(err)
 
       // Track failed attempts for security monitoring
       const timestamp = new Date().toISOString()

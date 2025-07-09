@@ -4,16 +4,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { CheckCircle, XCircle, AlertCircle, TrendingUp } from "lucide-react";
+import { logError } from "@/lib/logger";
 
 function mapApiResults(apiResults) {
   if (!apiResults) {
-    console.error("No API results provided");
+    logError("No API results provided");
     return null;
   }
-  
-  console.log("Mapping API results type:", typeof apiResults, 
-              "isArray:", Array.isArray(apiResults),
-              "keys:", Object.keys(apiResults));
   
   // Helper to extract array of strings from array of objects or strings
   function extractKeywordArray(arr) {
@@ -23,16 +20,9 @@ function mapApiResults(apiResults) {
   
   // Make sure we have a valid response with a score
   if (!apiResults.overallScore && !apiResults.score) {
-    console.error("Invalid results data: Missing score", apiResults);
+    logError("Invalid results data: Missing score", apiResults);
     return null;
   }
-  
-  // Debug what fields are available
-  console.log("API results keys:", Object.keys(apiResults));
-  console.log("Score fields:", {
-    overallScore: apiResults.overallScore,
-    score: apiResults.score
-  });
   
   return {
     score: apiResults.overallScore ?? apiResults.score ?? 0,
@@ -63,35 +53,10 @@ function mapApiResults(apiResults) {
 }
 
 export function ResultsPanel({ results }) {
-  console.log("ResultsPanel rendered with props:", results ? "Results present" : "No results", results);
   const mappedResults = mapApiResults(results);
-  console.log("ResultsPanel mapped results:", mappedResults ? "Mapped successfully" : "Mapping failed", mappedResults);
-  // results = {
-  //   score:  number,
-  //   matchedKeywords:  [string, …],
-  //   missingKeywords:  [string, …],
-  //   suggestions:      [string, …],
-  //   sections: {
-  //     skills:    { score: number, feedback: string },
-  //     experience:{ score: number, feedback: string },
-  //     keywords:  { score: number, feedback: string }
-  //   }
-  // }
-
-  const getScoreColor = (score) => {
-    if (score >= 80) return "text-green-600";
-    if (score >= 60) return "text-yellow-600";
-    return "text-red-600";
-  };
-
-  const getScoreIcon = (score) => {
-    if (score >= 80) return <CheckCircle className="h-5 w-5 text-green-600" />;
-    if (score >= 60) return <AlertCircle className="h-5 w-5 text-yellow-600" />;
-    return <XCircle className="h-5 w-5 text-red-600" />;
-  };
 
   if (!mappedResults) {
-    console.error("Failed to map results data", results);
+    logError("Failed to map results data", results);
     return (
       <div className="bg-yellow-50 p-4 rounded-md border border-yellow-200">
         <p className="text-yellow-800 font-medium">Results could not be displayed</p>
@@ -219,4 +184,3 @@ export function ResultsPanel({ results }) {
     </div>
   );
 }
- 

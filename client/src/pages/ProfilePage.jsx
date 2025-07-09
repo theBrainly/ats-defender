@@ -13,6 +13,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Navbar } from "@/components/Navbar"
 import { ProtectedRoute } from "@/components/protected-route"
 import { useAuth } from "@/hooks/use-auth"
+import { getToken } from "@/lib/token"
 import {
   User,
   Mail,
@@ -118,7 +119,7 @@ export default function ProfilePage() {
     formData.append("avatar", selectedFile)
 
     try {
-      const token = localStorage.getItem("token")
+      const token = getToken()
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api"}/auth/upload-avatar`, {
         method: "POST",
         headers: {
@@ -153,7 +154,7 @@ export default function ProfilePage() {
         avatarUrl = await handleImageUpload()
       }
 
-      const token = localStorage.getItem("token")
+      const token = getToken()
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api"}/auth/profile`, {
         method: "PUT",
         headers: {

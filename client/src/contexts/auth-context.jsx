@@ -1,4 +1,6 @@
 import React, { createContext, useEffect, useState } from "react"
+import { logError } from "@/lib/logger"
+import { getToken, setToken, removeToken } from "@/lib/token"
 
 const AuthContext = createContext(undefined)
 
@@ -16,7 +18,7 @@ export function AuthProvider({ children }) {
 
     const checkAuth = async () => {
         try {
-            const token = localStorage.getItem("token")
+            const token = getToken()
             if (!token) {
                 setIsLoading(false)
                 return
@@ -30,15 +32,14 @@ export function AuthProvider({ children }) {
 
             if (response.ok) {
                 const data = await response.json()
-                console.log(data)
                 setUser(data.user)
             } else {
-                localStorage.removeItem("token")
+                removeToken()
                 setUser(null)
             }
         } catch (error) {
-            console.error("Auth check failed:", error)
-            localStorage.removeItem("token")
+            logError("Auth check failed:", error)
+            removeToken()
             setUser(null)
         } finally {
             setIsLoading(false)
@@ -61,10 +62,10 @@ export function AuthProvider({ children }) {
                 throw new Error(data.message || "Sign in failed")
             }
 
-            localStorage.setItem("token", data.token)
+            setToken(data.token)
             setUser(data.user)
         } catch (error) {
-            console.error("Sign in error:", error)
+            logError("Sign in error:", error)
             throw error
         }
     }
@@ -85,17 +86,17 @@ export function AuthProvider({ children }) {
                 throw new Error(data.message || "Sign up failed")
             }
 
-            localStorage.setItem("token", data.token)
+            setToken(data.token)
             setUser(data.user)
         } catch (error) {
-            console.error("Sign up error:", error)
+            logError("Sign up error:", error)
             throw error
         }
     }
 
     const signOut = async () => {
         try {
-            const token = localStorage.getItem("token")
+            const token = getToken()
             if (token) {
                 await fetch(`${API_BASE_URL}/auth/signout`, {
                     method: "POST",
@@ -105,9 +106,9 @@ export function AuthProvider({ children }) {
                 })
             }
         } catch (error) {
-            console.error("Sign out error:", error)
+            logError("Sign out error:", error)
         } finally {
-            localStorage.removeItem("token")
+            removeToken()
             setUser(null)
         }
     }
