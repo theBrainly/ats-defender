@@ -22,29 +22,35 @@ import GuestPage from './pages/GuestPage';
 
 
 function App() {
-  const { isAuthenticated } = useAuth();
   return (
     <ThemeProvider defaultTheme="light" storageKey="ats-defender-theme">
       <AuthProvider>
         <Router>
-          <Routes>
-            <Route path="/" element={isAuthenticated ? <Home /> : <GuestPage />} />
-            <Route path="/app" element={<Home />} />
-            <Route path="/history" element={<HistoryPage />} />
-            <Route path="/auth/signin" element={<SignInPage />} />
-            <Route path="/auth/signup" element={<SignUpPage />} />
-            <Route path="/auth/forgot-password" element={<ForgotPassword />} />
-            <Route path="/analysis/:id" element={<AnalysisDetailPage />} />
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/settings" element={<SettingsPage />} />
-            <Route path="/terms" element={<TermsOfService />} />
-            <Route path="/privacy" element={<PrivacyPolicy />} />
-            <Route path="/contact" element={<ContactPage />} />
-            <Route path="*" element={<NotFoundPage />} />
-          </Routes>
+          <AppRoutes />
         </Router>
       </AuthProvider>
     </ThemeProvider>
+  );
+}
+
+function AppRoutes() {
+  const { isAuthenticated } = useAuth();
+  return (
+    <Routes>
+      <Route path="/" element={isAuthenticated ? <Home /> : <GuestPage />} />
+      <Route path="/app" element={<Home />} />
+      <Route path="/history" element={<HistoryPage />} />
+      <Route path="/auth/signin" element={<SignInPage />} />
+      <Route path="/auth/signup" element={<SignUpPage />} />
+      <Route path="/auth/forgot-password" element={<ForgotPassword />} />
+      <Route path="/analysis/:id" element={<AnalysisDetailPage />} />
+      <Route path="/profile" element={<ProfilePage />} />
+      <Route path="/settings" element={<SettingsPage />} />
+      <Route path="/terms" element={<TermsOfService />} />
+      <Route path="/privacy" element={<PrivacyPolicy />} />
+      <Route path="/contact" element={<ContactPage />} />
+      <Route path="*" element={<NotFoundPage />} />
+    </Routes>
   );
 }
 
