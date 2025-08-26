@@ -1,5 +1,6 @@
 // src/lib/token.js
 
+// Token management utility for authentication
 const TOKEN_KEY = "token";
 
 export function getToken() {
