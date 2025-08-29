@@ -1,3 +1,4 @@
+// Utility functions for resume and job description analysis
 // export const analyzeResume = (resumeText, jdText) => {
 //   // Preprocessing
 //   const resumeWords = preprocessText(resumeText);
