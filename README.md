@@ -81,17 +81,14 @@ Contributions are welcome! Please open issues or submit pull requests for improv
 ## 👨‍💻 Developer
 
 **Akash Sharma**
-- 📧 Email: [officialmailakashsharma@gmail.com](mailto:officialmailakashsharma@gmail.com)
-- 🐙 GitHub: [@theBrainly](https://github.com/theBrainly)
-- ⏰ Response Time: Within 24-48 hours
 
+## � Contact
+
+For questions or feedback, reach out via [GitHub Issues](https://github.com/theBrainly/ats-defender/issues) or email [officialmailakashsharma@gmail.com](mailto:officialmailakashsharma@gmail.com).
 ## 📞 Support
 
 Need help? Contact us:
 - 📧 **Email**: [officialmailakashsharma@gmail.com](mailto:officialmailakashsharma@gmail.com)
-- 🌐 **Contact Form**: Available at `/contact` in the app
-- 📖 **Documentation**: Comprehensive guides included
-
 ## 📄 License
 
 **© 2025 Akash Sharma. All rights reserved.**
