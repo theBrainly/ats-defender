@@ -36,8 +36,6 @@ ATS Defender is a modern web application that helps job seekers optimize their r
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Node.js (v16 or newer)
-- npm or yarn package manager
 
 ### Installation
 
@@ -67,6 +65,10 @@ ATS Defender is a modern web application that helps job seekers optimize their r
 
 4. **Open your browser**
    Navigate to `http://localhost:5173`
+
+## 🤝 Contributing
+
+Contributions are welcome! Please open issues or submit pull requests for improvements, bug fixes, or new features.
 
 ## 📖 Usage
 
