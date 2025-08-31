@@ -180,20 +180,16 @@ npm run dev
 ### Server
 
 ```bash
-cd server
-npm install
-npm run dev
 ```
 
 ## Environment Files
 
-- `.env.development`: Development environment variables
-- `.env.production`: Production environment variables
-- `.env.example`: Example environment file (safe to commit)
+## 📄 License
+
+This project is licensed under the MIT License. See the LICENSE file for details.
 
 ## Additional Resources
 
 - [Vercel Documentation](https://vercel.com/docs)
 - [Vite Documentation](https://vitejs.dev/guide/)
 - [Express Documentation](https://expressjs.com/)
-- [MongoDB Documentation](https://docs.mongodb.com/)
