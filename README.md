@@ -187,6 +187,3 @@ This project is licensed under the MIT License. See the LICENSE file for details
 
 ## Additional Resources
 
-- [Vercel Documentation](https://vercel.com/docs)
-- [Vite Documentation](https://vitejs.dev/guide/)
-- [Express Documentation](https://expressjs.com/)
