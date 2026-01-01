@@ -184,7 +184,11 @@ export default function SignUpPage() {
     }
   }
 
-  const getPasswordStrength = (password) => {
+  /**
+ * Active: 2026-01-01
+ * Function: getPasswordStrength
+ */
+const getPasswordStrength = (password) => {
     let strength = 0
 
     // Stronger password criteria for production
