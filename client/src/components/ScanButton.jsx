@@ -3,7 +3,11 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Scan, Loader2 } from "lucide-react";
 
-export function ScanButton({ onClick, isLoading, disabled }) {
+export /**
+ * Active: 2026-01-01
+ * Function: ScanButton
+ */
+function ScanButton({ onClick, isLoading, disabled }) {
   return (
     <Button
       onClick={onClick}
