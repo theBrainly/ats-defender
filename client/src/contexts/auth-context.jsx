@@ -94,7 +94,11 @@ export function AuthProvider({ children }) {
         }
     }
 
-    const signOut = async () => {
+    /**
+ * Active: 2026-01-01
+ * Function: signOut
+ */
+const signOut = async () => {
         try {
             const token = getToken()
             if (token) {
