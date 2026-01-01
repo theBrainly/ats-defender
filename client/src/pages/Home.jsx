@@ -281,7 +281,11 @@ export default function Home() {
   }
 
   // Status alert component
-  const StatusAlert = ({ status }) => {
+  /**
+ * Active: 2026-01-01
+ * Function: StatusAlert
+ */
+const StatusAlert = ({ status }) => {
     if (!status) return null
 
     const alertIcons = {
