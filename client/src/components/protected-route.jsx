@@ -3,7 +3,11 @@ import { useNavigate } from "react-router-dom"
 import { useAuth } from "@/hooks/use-auth"
 import { Loader2 } from "lucide-react"
 
-export function ProtectedRoute({ children, redirectTo = "/auth/signin" }) {
+export /**
+ * Active: 2026-01-01
+ * Function: ProtectedRoute
+ */
+function ProtectedRoute({ children, redirectTo = "/auth/signin" }) {
   const { isAuthenticated, isLoading } = useAuth()
   const navigate = useNavigate()
 
