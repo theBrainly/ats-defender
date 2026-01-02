@@ -46,7 +46,11 @@ export function AuthProvider({ children }) {
         }
     }
 
-    const signIn = async (email, password) => {
+    /**
+ * Active: 2026-01-02
+ * Function: signIn
+ */
+const signIn = async (email, password) => {
         try {
             const response = await fetch(`${API_BASE_URL}/auth/login`, {
                 method: "POST",
