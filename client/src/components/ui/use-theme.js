@@ -1,7 +1,11 @@
 import { useContext } from "react"
 import { ThemeProviderContext } from "./theme-provider"
 
-export const useTheme = () => {
+export /**
+ * Active: 2026-01-02
+ * Function: useTheme
+ */
+const useTheme = () => {
   const context = useContext(ThemeProviderContext)
 
   if (context === undefined) {
