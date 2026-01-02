@@ -5,7 +5,11 @@ import { createContext, useEffect, useState } from "react"
 
 export const ThemeProviderContext = createContext(undefined)
 
-export function ThemeProvider({
+export /**
+ * Active: 2026-01-02
+ * Function: ThemeProvider
+ */
+function ThemeProvider({
     children,
     defaultTheme = "system",
     storageKey = "ats-defender-ui-theme",
