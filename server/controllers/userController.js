@@ -1,6 +1,10 @@
 import User from '../models/User.js';
 
-export const getUserProfile = async (req, res) => {
+export /**
+ * Active: 2026-01-02
+ * Function: getUserProfile
+ */
+const getUserProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select('-password');
     if (!user) {
