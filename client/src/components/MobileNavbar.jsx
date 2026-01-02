@@ -10,7 +10,11 @@ const navItems = [
   { label: "Settings", icon: <Settings />, to: "/settings" },
 ];
 
-export default function MobileNavbar() {
+export default /**
+ * Active: 2026-01-02
+ * Function: MobileNavbar
+ */
+function MobileNavbar() {
   const location = useLocation();
   return (
     <nav className="mobile-navbar">
