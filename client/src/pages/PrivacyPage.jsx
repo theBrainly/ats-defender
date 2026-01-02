@@ -6,7 +6,11 @@ import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
 
-export default function PrivacyPage() {
+export default /**
+ * Active: 2026-01-02
+ * Function: PrivacyPage
+ */
+function PrivacyPage() {
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
