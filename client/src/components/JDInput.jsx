@@ -6,7 +6,11 @@ import { Briefcase } from "lucide-react"
 
 
 
-export default function JDInput({ value, onChange }) {
+export default /**
+ * Active: 2026-01-03
+ * Function: JDInput
+ */
+function JDInput({ value, onChange }) {
   return (
     <Card className="h-full">
       <CardHeader>
