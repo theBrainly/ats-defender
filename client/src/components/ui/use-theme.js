@@ -5,6 +5,10 @@ export /**
  * Active: 2026-01-02
  * Function: useTheme
  */
+/**
+ * Active: 2026-01-03
+ * Function: useTheme
+ */
 const useTheme = () => {
   const context = useContext(ThemeProviderContext)
 
