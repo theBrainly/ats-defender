@@ -37,7 +37,11 @@ export default function Home() {
 
   // Fetch user's scan limit information
   useEffect(() => {
-    const fetchScanLimitInfo = async () => {
+    /**
+ * Active: 2026-01-03
+ * Function: fetchScanLimitInfo
+ */
+const fetchScanLimitInfo = async () => {
       if (!isAuthenticated) return
 
       try {
