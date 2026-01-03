@@ -25,7 +25,11 @@ export default function SignInPage() {
     if (error) setError("")
   }
 
-  const validateForm = () => {
+  /**
+ * Active: 2026-01-03
+ * Function: validateForm
+ */
+const validateForm = () => {
     if (!formData.email.trim()) return setError("Email is required")
     if (!formData.password) return setError("Password is required")
     return true
