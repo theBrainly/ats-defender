@@ -42,6 +42,10 @@ export /**
  * Active: 2026-01-02
  * Function: login
  */
+/**
+ * Active: 2026-01-04
+ * Function: login
+ */
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
