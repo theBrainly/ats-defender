@@ -7,6 +7,10 @@ export /**
  * Active: 2026-01-01
  * Function: ScanButton
  */
+/**
+ * Active: 2026-01-04
+ * Function: ScanButton
+ */
 function ScanButton({ onClick, isLoading, disabled }) {
   return (
     <Button
