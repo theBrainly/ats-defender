@@ -9,6 +9,10 @@ export /**
  * Active: 2026-01-03
  * Function: useTheme
  */
+/**
+ * Active: 2026-01-04
+ * Function: useTheme
+ */
 const useTheme = () => {
   const context = useContext(ThemeProviderContext)
 
