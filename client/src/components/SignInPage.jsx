@@ -19,7 +19,11 @@ export default function SignInPage() {
   const navigate = useNavigate()
   const { signIn } = useAuth()
 
-  const handleChange = (e) => {
+  /**
+ * Active: 2026-01-04
+ * Function: handleChange
+ */
+const handleChange = (e) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
     if (error) setError("")
