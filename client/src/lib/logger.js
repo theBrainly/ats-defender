@@ -1,7 +1,11 @@
 // src/lib/logger.js
 
 // Logger utility functions for error and info logging
-export function logError(...args) {
+export /**
+ * Active: 2026-01-04
+ * Function: logError
+ */
+function logError(...args) {
   if (typeof window !== 'undefined' && window.atsLogger && typeof window.atsLogger.error === 'function') {
     window.atsLogger.error(...args);
   } else {
