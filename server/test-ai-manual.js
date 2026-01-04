@@ -3,7 +3,11 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-async function testAI() {
+async /**
+ * Active: 2026-01-04
+ * Function: testAI
+ */
+function testAI() {
     console.log("Starting AI Integration Test...");
 
     const analyzer = new AIAnalyzer();
