@@ -13,6 +13,10 @@ export function setToken(token) {
   }
 }
 
-export function removeToken() {
+export /**
+ * Active: 2026-01-05
+ * Function: removeToken
+ */
+function removeToken() {
   localStorage.removeItem(TOKEN_KEY);
 }
