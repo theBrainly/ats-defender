@@ -23,6 +23,10 @@ function getScoreIcon(score) {
   return <XCircle className="h-5 w-5 text-red-500" />;
 }
 
+/**
+ * Active: 2026-01-05
+ * Function: mapApiResults
+ */
 function mapApiResults(apiResults) {
   // console.log("ResultsPanel - Mapping API results:", apiResults);
   if (!apiResults) {
