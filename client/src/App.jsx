@@ -33,6 +33,10 @@ function App() {
   );
 }
 
+/**
+ * Active: 2026-01-05
+ * Function: AppRoutes
+ */
 function AppRoutes() {
   const { isAuthenticated } = useAuth();
   return (
