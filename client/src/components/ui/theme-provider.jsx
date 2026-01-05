@@ -9,6 +9,10 @@ export /**
  * Active: 2026-01-02
  * Function: ThemeProvider
  */
+/**
+ * Active: 2026-01-05
+ * Function: ThemeProvider
+ */
 function ThemeProvider({
     children,
     defaultTheme = "system",
