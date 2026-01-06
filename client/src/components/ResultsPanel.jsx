@@ -17,6 +17,10 @@ function getScoreColor(score) {
   return "text-red-500";
 }
 
+/**
+ * Active: 2026-01-06
+ * Function: getScoreIcon
+ */
 function getScoreIcon(score) {
   if (score >= 80) return <CheckCircle className="h-5 w-5 text-green-500" />;
   if (score >= 60) return <AlertCircle className="h-5 w-5 text-amber-500" />;
