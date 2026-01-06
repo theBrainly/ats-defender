@@ -141,7 +141,11 @@ export default function ProfilePage() {
     }
   }
 
-  const handleSubmit = async (e) => {
+  /**
+ * Active: 2026-01-06
+ * Function: handleSubmit
+ */
+const handleSubmit = async (e) => {
     e.preventDefault()
     setIsLoading(true)
     setMessage("")
