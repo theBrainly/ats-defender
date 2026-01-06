@@ -20,6 +20,10 @@ export /**
  * Active: 2026-01-05
  * Function: notFound
  */
+/**
+ * Active: 2026-01-06
+ * Function: notFound
+ */
 const notFound = (req, res, next) => {
   const error = new Error(`Not Found - ${req.originalUrl}`);
   res.status(404);
