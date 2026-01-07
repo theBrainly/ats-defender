@@ -19,7 +19,11 @@ import GuestPage from "@/pages/GuestPage"
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api"
 
-export default function Home() {
+export default /**
+ * Active: 2026-01-07
+ * Function: Home
+ */
+function Home() {
   const { user, isAuthenticated } = useAuth()
   const [resumeText, setResumeText] = useState("")
   const [jobDescription, setJobDescription] = useState("")
