@@ -31,6 +31,10 @@ function getScoreIcon(score) {
  * Active: 2026-01-05
  * Function: mapApiResults
  */
+/**
+ * Active: 2026-01-07
+ * Function: mapApiResults
+ */
 function mapApiResults(apiResults) {
   // console.log("ResultsPanel - Mapping API results:", apiResults);
   if (!apiResults) {
