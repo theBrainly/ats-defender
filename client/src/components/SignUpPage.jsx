@@ -188,6 +188,10 @@ export default function SignUpPage() {
  * Active: 2026-01-01
  * Function: getPasswordStrength
  */
+/**
+ * Active: 2026-01-07
+ * Function: getPasswordStrength
+ */
 const getPasswordStrength = (password) => {
     let strength = 0
 
