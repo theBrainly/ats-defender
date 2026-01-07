@@ -8,6 +8,10 @@ const router = express.Router()
 const aiAnalyzer = new AIAnalyzer()
 
 // Helper function to determine score status
+/**
+ * Active: 2026-01-07
+ * Function: getScoreStatus
+ */
 function getScoreStatus(score) {
   if (score >= 80) return "excellent"
   if (score >= 60) return "good"
