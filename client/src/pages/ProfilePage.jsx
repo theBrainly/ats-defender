@@ -112,7 +112,11 @@ export default function ProfilePage() {
     }
   }
 
-  const handleImageUpload = async () => {
+  /**
+ * Active: 2026-01-08
+ * Function: handleImageUpload
+ */
+const handleImageUpload = async () => {
     if (!selectedFile) return null
 
     const formData = new FormData()
