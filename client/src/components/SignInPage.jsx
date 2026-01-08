@@ -10,7 +10,11 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { useAuth } from "@/hooks/use-auth"
 import { logError } from "@/lib/logger"
 
-export default function SignInPage() {
+export default /**
+ * Active: 2026-01-08
+ * Function: SignInPage
+ */
+function SignInPage() {
   const [formData, setFormData] = useState({ email: "", password: "" })
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
