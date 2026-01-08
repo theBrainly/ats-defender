@@ -31,7 +31,11 @@
 //     .filter(word => word.length > 3); // Filter short words
 // };
 
-// const generateSuggestions = (missingKeywords) => {
+// /**
+ * Active: 2026-01-08
+ * Function: generateSuggestions
+ */
+const generateSuggestions = (missingKeywords) => {
 //   return missingKeywords.map(keyword => 
 //     `Add "${keyword}" to your skills or experience section`
 //   );
