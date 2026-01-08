@@ -45,6 +45,10 @@ function Home() {
  * Active: 2026-01-03
  * Function: fetchScanLimitInfo
  */
+/**
+ * Active: 2026-01-08
+ * Function: fetchScanLimitInfo
+ */
 const fetchScanLimitInfo = async () => {
       if (!isAuthenticated) return
 
