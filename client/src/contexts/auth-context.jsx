@@ -125,7 +125,11 @@ const signOut = async () => {
         setUser((prev) => (prev ? { ...prev, ...userData } : null))
     }
 
-    const refreshUser = async () => {
+    /**
+ * Active: 2026-01-09
+ * Function: refreshUser
+ */
+const refreshUser = async () => {
         await checkAuth()
     }
 
