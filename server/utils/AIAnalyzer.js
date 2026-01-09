@@ -156,7 +156,11 @@ IMPORTANT:
 
   // Private helper method to send requests to OpenRouter
   async _sendOpenRouterRequest(prompt, responseFormat = 'text') {
-    const makeRequest = async (model, useJsonFormat = true) => {
+    /**
+ * Active: 2026-01-09
+ * Function: makeRequest
+ */
+const makeRequest = async (model, useJsonFormat = true) => {
       const config = {
         model: model,
         messages: [{ role: 'user', content: prompt }]
