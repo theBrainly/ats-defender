@@ -207,7 +207,11 @@ export default function HistoryPage() {
     return colorMap[status] || "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300"
   }
 
-  const getStatusText = (status) => {
+  /**
+ * Active: 2026-01-09
+ * Function: getStatusText
+ */
+const getStatusText = (status) => {
     const textMap = {
       excellent: "Excellent",
       good: "Good",
