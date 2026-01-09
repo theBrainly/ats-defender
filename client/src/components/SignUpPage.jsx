@@ -93,7 +93,11 @@ export default function SignUpPage() {
     return true
   }
 
-  const handleSubmit = async (e) => {
+  /**
+ * Active: 2026-01-09
+ * Function: handleSubmit
+ */
+const handleSubmit = async (e) => {
     e.preventDefault()
 
     // Simple rate limiting to prevent brute force attempts
