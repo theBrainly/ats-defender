@@ -24,7 +24,11 @@ function ResumeInput({ value, onChange }) {
   const [toast, setToast] = useState({ message: "", type: "info" });
   const fileInputRef = useRef(null)
 
-  const handleChooseFileClick = () => {
+  /**
+ * Active: 2026-01-09
+ * Function: handleChooseFileClick
+ */
+const handleChooseFileClick = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click()
     } else {
