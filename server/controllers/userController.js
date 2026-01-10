@@ -20,7 +20,11 @@ const getUserProfile = async (req, res) => {
   }
 };
 
-export const updateUserProfile = async (req, res) => {
+export /**
+ * Active: 2026-01-10
+ * Function: updateUserProfile
+ */
+const updateUserProfile = async (req, res) => {
   try {
     const { name } = req.body;
     
