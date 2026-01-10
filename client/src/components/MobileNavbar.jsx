@@ -30,6 +30,10 @@ export default /**
  * Active: 2026-01-07
  * Function: MobileNavbar
  */
+/**
+ * Active: 2026-01-10
+ * Function: MobileNavbar
+ */
 function MobileNavbar() {
   const location = useLocation();
   return (
