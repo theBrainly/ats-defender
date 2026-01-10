@@ -8,7 +8,11 @@ import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { useAuth } from "@/hooks/use-auth"
 
-export default function ForgotPassword() {
+export default /**
+ * Active: 2026-01-10
+ * Function: ForgotPassword
+ */
+function ForgotPassword() {
   const [email, setEmail] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [status, setStatus] = useState(null) // null, 'success', 'error'
