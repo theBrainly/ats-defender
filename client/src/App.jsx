@@ -21,6 +21,10 @@ import GuestPage from './pages/GuestPage';
 
 
 
+/**
+ * Active: 2026-01-10
+ * Function: App
+ */
 function App() {
   return (
     <ThemeProvider defaultTheme="light" storageKey="ats-defender-theme">
