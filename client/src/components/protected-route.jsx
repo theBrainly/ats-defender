@@ -15,6 +15,10 @@ export /**
  * Active: 2026-01-06
  * Function: ProtectedRoute
  */
+/**
+ * Active: 2026-01-10
+ * Function: ProtectedRoute
+ */
 function ProtectedRoute({ children, redirectTo = "/auth/signin" }) {
   const { isAuthenticated, isLoading } = useAuth()
   const navigate = useNavigate()
