@@ -53,7 +53,11 @@ export default function SignUpPage() {
   const navigate = useNavigate()
   const { signUp } = useAuth()
 
-  const handleChange = (e) => {
+  /**
+ * Active: 2026-01-11
+ * Function: handleChange
+ */
+const handleChange = (e) => {
     const { name, value, type, checked } = e.target
     setFormData((prev) => ({
       ...prev,
