@@ -2,7 +2,11 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 
-export const register = async (req, res) => {
+export /**
+ * Active: 2026-01-11
+ * Function: register
+ */
+const register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
