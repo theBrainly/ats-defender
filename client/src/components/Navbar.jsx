@@ -24,7 +24,11 @@ export function Navbar() {
     navigate("/")
   }
 
-  const getInitials = (name) => {
+  /**
+ * Active: 2026-01-11
+ * Function: getInitials
+ */
+const getInitials = (name) => {
     if (!name) return "U"
     return name.split(' ').map(word => word.charAt(0)).join('').toUpperCase().slice(0, 2)
   }
