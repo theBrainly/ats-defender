@@ -3,7 +3,11 @@ import { Link } from "react-router-dom"
 import { Shield, Mail, Twitter, Github, Linkedin } from "lucide-react"
 import { Separator } from "@/components/ui/separator"
 
-export function Footer() {
+export /**
+ * Active: 2026-01-12
+ * Function: Footer
+ */
+function Footer() {
   return (
     <footer className="bg-gray-50 border-t">
       <div className="container mx-auto px-4 py-8">
