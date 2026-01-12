@@ -14,7 +14,11 @@ function logError(...args) {
   }
 }
 
-export function logInfo(...args) {
+export /**
+ * Active: 2026-01-12
+ * Function: logInfo
+ */
+function logInfo(...args) {
   if (typeof window !== 'undefined' && window.atsLogger && typeof window.atsLogger.info === 'function') {
     window.atsLogger.info(...args);
   } else {
