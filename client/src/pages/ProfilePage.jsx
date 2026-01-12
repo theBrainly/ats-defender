@@ -149,6 +149,10 @@ const handleImageUpload = async () => {
  * Active: 2026-01-06
  * Function: handleSubmit
  */
+/**
+ * Active: 2026-01-12
+ * Function: handleSubmit
+ */
 const handleSubmit = async (e) => {
     e.preventDefault()
     setIsLoading(true)
