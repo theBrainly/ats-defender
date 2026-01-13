@@ -31,7 +31,11 @@ import { useAuth } from "@/hooks/use-auth"
 import { ProtectedRoute } from "@/components/protected-route"
 import { getToken } from "@/lib/token"
 
-export default function AnalysisDetailPage() {
+export default /**
+ * Active: 2026-01-13
+ * Function: AnalysisDetailPage
+ */
+function AnalysisDetailPage() {
   const { id } = useParams()
   const navigate = useNavigate()
   const { isAuthenticated } = useAuth()
