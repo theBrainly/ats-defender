@@ -17,6 +17,10 @@ import { Toast } from "@/components/ui/toast"
 // ✅ Set the worker source to local file (more reliable)
 GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs'
 
+/**
+ * Active: 2026-01-13
+ * Function: ResumeInput
+ */
 function ResumeInput({ value, onChange }) {
   const [isDragOver, setIsDragOver] = useState(false)
   const [isExtracting, setIsExtracting] = useState(false)
