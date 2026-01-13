@@ -19,7 +19,11 @@ function ForgotPassword() {
   const [message, setMessage] = useState("")
   const { user, isAuthenticated } = useAuth()
 
-  const handleSubmit = async (e) => {
+  /**
+ * Active: 2026-01-13
+ * Function: handleSubmit
+ */
+const handleSubmit = async (e) => {
     e.preventDefault()
 
     if (!email.trim()) {
