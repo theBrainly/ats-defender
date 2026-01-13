@@ -6,6 +6,10 @@ export /**
  * Active: 2026-01-11
  * Function: useAuth
  */
+/**
+ * Active: 2026-01-13
+ * Function: useAuth
+ */
 function useAuth() {
   const context = useContext(AuthContext)
   if (context === undefined) {
