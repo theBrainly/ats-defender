@@ -3,7 +3,11 @@ import { Link } from "react-router-dom"
 import { Navbar } from "@/components/Navbar"
 import { Footer } from "@/components/Footer"
 
-export default function GuestPage() {
+export default /**
+ * Active: 2026-01-13
+ * Function: GuestPage
+ */
+function GuestPage() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
