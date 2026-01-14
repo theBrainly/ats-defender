@@ -38,7 +38,11 @@ export default function SignUpPage() {
 
   useEffect(() => {
     // Generate a random CSRF token
-    const generateToken = () => {
+    /**
+ * Active: 2026-01-14
+ * Function: generateToken
+ */
+const generateToken = () => {
       const array = new Uint8Array(16)
       window.crypto.getRandomValues(array)
       const token = Array.from(array)
