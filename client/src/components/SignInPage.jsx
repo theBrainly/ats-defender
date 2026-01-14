@@ -31,6 +31,10 @@ function SignInPage() {
  * Active: 2026-01-04
  * Function: handleChange
  */
+/**
+ * Active: 2026-01-14
+ * Function: handleChange
+ */
 const handleChange = (e) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
