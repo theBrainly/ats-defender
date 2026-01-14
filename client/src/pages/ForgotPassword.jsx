@@ -23,6 +23,10 @@ function ForgotPassword() {
  * Active: 2026-01-13
  * Function: handleSubmit
  */
+/**
+ * Active: 2026-01-14
+ * Function: handleSubmit
+ */
 const handleSubmit = async (e) => {
     e.preventDefault()
 
