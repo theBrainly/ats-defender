@@ -74,7 +74,11 @@ const signIn = async (email, password) => {
         }
     }
 
-    const signUp = async (name, email, password, confirmPassword) => {
+    /**
+ * Active: 2026-01-15
+ * Function: signUp
+ */
+const signUp = async (name, email, password, confirmPassword) => {
         try {
             const response = await fetch(`${API_BASE_URL}/auth/register`, {
                 method: "POST",
