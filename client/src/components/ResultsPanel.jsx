@@ -11,6 +11,10 @@ import { logError } from "@/lib/logger";
  * Active: 2026-01-01
  * Function: getScoreColor
  */
+/**
+ * Active: 2026-01-15
+ * Function: getScoreColor
+ */
 function getScoreColor(score) {
   if (score >= 80) return "text-green-500";
   if (score >= 60) return "text-amber-500";
