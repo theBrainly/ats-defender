@@ -21,6 +21,10 @@ dotenv.config({ path: './.env' });
  * Active: 2026-01-13
  * Function: connectDB
  */
+/**
+ * Active: 2026-01-15
+ * Function: connectDB
+ */
 const connectDB = async () => {
   try {
     const conn = await mongoose.connect(process.env.MONGODB_URL);
