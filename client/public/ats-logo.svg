@@ -1,0 +1,10 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Shield Background -->
+  <path d="M16 2L26 7V16C26 23 16 30 16 30C16 30 6 23 6 16V7L16 2Z" fill="#2563eb" stroke="#1e40af" stroke-width="1"/>
+  
+  <!-- ATS Letters -->
+  <text x="16" y="20" font-family="Arial, sans-serif" font-size="8" font-weight="bold" text-anchor="middle" fill="white">ATS</text>
+  
+  <!-- Shield decoration lines -->
+  <path d="M10 12H22M10 16H22M10 20H18" stroke="white" stroke-width="1" opacity="0.7"/>
+</svg>
