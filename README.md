@@ -1,10 +1,6 @@
 # 🛡️ ATS Defender
 
 **Optimize your resume for Applicant Tracking Systems and land your dream job!**
-
-# 🛡️ ATS Defender
-
-**Optimize your resume for Applicant Tracking Systems and land your dream job!**
 [![Project Status](https://img.shields.io/badge/status-active-brightgreen)](https://github.com/theBrainly/ats-defender)
 [![Built with React](https://img.shields.io/badge/Built%20with-React-61DAFB?style=flat-square&logo=react)](https://reactjs.org/)
 [![Powered by Vite](https://img.shields.io/badge/Powered%20by-Vite-646CFF?style=flat-square&logo=vite)](https://vitejs.dev/)
